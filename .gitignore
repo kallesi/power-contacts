@@ -1,0 +1,9 @@
+# Folders
+__pycache__
+venv
+.idea
+frontend/node_modules
+
+# Files
+credentials.json
+token.json
