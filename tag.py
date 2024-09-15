@@ -21,3 +21,4 @@ def update_tag(plain_text:str, old_tag: str, new_tag:str):
             new_attributes.append(trimmed_attribute)
     new_text = "\n".join(new_attributes)
     return new_text
+

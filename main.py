@@ -2,9 +2,8 @@ from typing import Union
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 import uvicorn
-from google_api import get_contacts, get_contact, update_contact
 
-from handle_requests import handle_get_contacts, handle_get_contact
+from handle_requests import handle_get_contacts, handle_get_contact, handle_get_tags, handle_get_events
 
 app = FastAPI()
 
@@ -19,6 +18,12 @@ def get_contact(id: str):
 @app.get("/contacts")
 def get_contacts():
     return handle_get_contacts()
+
+@app.get("/events")
+def get_events():
+    return handle_get_events()
+
+
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 

@@ -1,5 +1,6 @@
 from google_api import get_contact, get_contacts, get_plain_text, update_contact_plain_text
 from contact import Contact, create_contact_object
+from collections import defaultdict
 from tag import add_tag, remove_tag, update_tag
 from event import add_event, remove_event, update_event
 
@@ -11,6 +12,26 @@ def handle_get_contacts():
             create_contact_object(contact)
         )
     return contact_objects
+
+def handle_get_tags():
+    contact_objects: list[Contact] = handle_get_contacts()
+    tags_dict = defaultdict(list)
+    for contact in contact_objects:
+        for tag in set(contact.tags):  # Using set to get unique tags
+            tags_dict[tag].append(contact)
+    return tags_dict
+
+def handle_get_events():
+    contact_objects: list[Contact] = handle_get_contacts()
+    events_dict = defaultdict(set)
+    for contact in contact_objects:
+        for event in contact.events:
+            date = event.date
+            if date:
+                events_dict[date].add(contact)
+    # Convert sets to lists before returning
+    events_dict = {date: list(contacts) for date, contacts in events_dict.items()}
+    return events_dict
 
 def handle_get_contact(id: str):
     contact: dict = get_contact(id)
@@ -73,3 +94,5 @@ def handle_update_event(id: str, date: str, description: str):
     new_contact = update_contact_plain_text(id, new_text)
     return create_contact_object(new_contact)
 
+if __name__ == "__main__":
+    handle_get_events()
