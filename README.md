@@ -1,7 +1,7 @@
 # Power Contacts
 Leverages the power of plain text.
 
-![Contact Page](assets/screencap_contact_page.png)
+<img src="assets/screencap_contact_page.png" width=70% height=70%>
 
 ### Tags & Events:
 - You need tags to organise people from different areas of life
