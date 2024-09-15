@@ -1,8 +1,8 @@
+from event import add_event, remove_event, update_event
 from google_api import get_contact, get_contacts, get_plain_text, update_contact_plain_text
 from contact import Contact, create_contact_object
 from collections import defaultdict
 from tag import add_tag, remove_tag, update_tag
-from event import add_event, remove_event, update_event
 
 def handle_get_contacts():
     contacts: list = get_contacts()
@@ -21,17 +21,36 @@ def handle_get_tags():
             tags_dict[tag].append(contact)
     return tags_dict
 
-def handle_get_events():
+def handle_get_tag(tag: str):
+    tags: dict = handle_get_tags()
+    matched_tags = {}
+    for key, val in tags.items():
+        if key.startswith(tag):
+            matched_tags[key] = val
+    return matched_tags
+
+def handle_get_events() -> dict[list[dict]]:
     contact_objects: list[Contact] = handle_get_contacts()
-    events_dict = defaultdict(set)
+    events_dict = defaultdict(list)
     for contact in contact_objects:
         for event in contact.events:
             date = event.date
             if date:
-                events_dict[date].add(contact)
-    # Convert sets to lists before returning
-    events_dict = {date: list(contacts) for date, contacts in events_dict.items()}
+                events_dict[date].append({
+                    'contact': contact,
+                    'event': event.description
+                })
     return events_dict
+
+def handle_get_event(date: str):
+    events: dict[list[dict]] = handle_get_events()
+    matched_events = []
+    for key, val in events.items():
+        if key.startswith(date):
+            for event in val:
+                matched_events.append(event)
+    return matched_events
+
 
 def handle_get_contact(id: str):
     contact: dict = get_contact(id)
@@ -95,4 +114,4 @@ def handle_update_event(id: str, date: str, description: str):
     return create_contact_object(new_contact)
 
 if __name__ == "__main__":
-    handle_get_events()
+    handle_get_tag('hb')
