@@ -10,7 +10,8 @@ def get_contacts() -> list[dict]:
         .list(
             resourceName='people/me',
             personFields='names,biographies,emailAddresses,addresses',
-            sortOrder='FIRST_NAME_ASCENDING'
+            sortOrder='FIRST_NAME_ASCENDING',
+            pageSize=1000
         )
         .execute()
     )
