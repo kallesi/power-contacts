@@ -1,52 +1,41 @@
-import { useEffect, useState } from 'react';
-import ContactCard from '../components/ContactCard'
+import { useState } from 'react';
+import ContactCard from '../components/ContactCard';
+import ContactPage from '../pages/ContactPage';
 import { BACKEND_URL } from '../constants';
+import useFetch from '../hooks/useFetch';
 
 type Event = {
-  date: string
-  description: string
-}
+  date: string;
+  description: string;
+};
 
 type Contact = {
-  id: string
-  name: string
-  tags: string[]
-  events: Event[]
-}
-
+  id: string;
+  name: string;
+  tags: string[];
+  events: Event[];
+};
 
 function Home() {
-  const [contacts, setContacts] = useState<Contact[]>([]);
-  const [error, setError] = useState<Error | null>(null); // Explicitly define the type of error state
+  const { data: contacts } = useFetch<Contact[]>(`${BACKEND_URL}/contacts`);
+  const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
 
-  useEffect(() => {
-    getContacts()
-      .then(data => {
-        setContacts(data);
-      })
-      .catch(error => {
-        setError(error);
-      });
-  }, []);
 
-  async function getContacts() {
-    const res = await fetch(`${BACKEND_URL}/contacts`);
-    if (!res.ok) {
-      throw new Error('Failed to fetch contacts');
-    }
-    const data = await res.json();
-    return data;
+  function handleCardClick(contact: Contact) {
+    setSelectedContact(contact);
+  }
+
+  function handleCloseOverlay() {
+    setSelectedContact(null);
   }
 
   return (
-    <div className='lg:grid lg:grid-cols-4 p-5 m-5 gap-3'>
-      {error ? (
-        <p>Error: {error.message}</p>
-      ) : (
-        contacts.map(contact => (
-          <ContactCard key={contact.id} {...contact} />
-          // Render your ContactCard component here with appropriate props
-        ))
+    <div className="md:grid md:grid-cols-4 p-5 m-5 gap-3">
+      {contacts?.map(contact => (
+        <ContactCard key={contact.id} {...contact} onClick={() => handleCardClick(contact)} />
+      ))}
+      {selectedContact && (
+        <ContactPage contact={selectedContact} onClose={handleCloseOverlay} />
       )}
     </div>
   );
