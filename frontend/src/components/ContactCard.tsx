@@ -1,15 +1,21 @@
-function ContactCard() {
+type ContactCardProps = {
+  name: string
+  tags: string[]
+}
+
+
+function ContactCard({ name, tags }: ContactCardProps) {
+
   return (
-    <div className='card bg-base-100 m-2 p-2 shadow-xl'>
+    <div className='card bg-base-100 m-2 p-2 shadow-xl hover:bg-base-200 hover:transition-all hover:ease-linear'>
       <div className='card-body'>
-        <h2 className='card-title'>
-          Shoes!
-          <div className='badge badge-secondary'>NEW</div>
+        <h2 className='card-title self-center'>
+          {name}
         </h2>
-        <p>If a dog chews shoes whose shoes does he choose?</p>
-        <div className='card-actions justify-end'>
-          <div className='badge badge-outline'>Fashion</div>
-          <div className='badge badge-outline'>Products</div>
+        <div className='flex flex-row flex-wrap justify-center items-center'>
+          {tags.map(tag => (
+            <div className='badge badge-primary m-1 p-2 font-medium'>{tag}</div>
+          ))}
         </div>
       </div>
     </div>

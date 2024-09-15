@@ -18,7 +18,10 @@ def handle_get_tags():
     tags_dict = defaultdict(list)
     for contact in contact_objects:
         for tag in set(contact.tags):  # Using set to get unique tags
-            tags_dict[tag].append(contact)
+            tags_dict[tag].append({
+                'id': contact.id,
+                'name': contact.name,
+            })
     return tags_dict
 
 def handle_get_tag(tag: str):
@@ -37,8 +40,9 @@ def handle_get_events() -> dict[list[dict]]:
             date = event.date
             if date:
                 events_dict[date].append({
-                    'contact': contact,
-                    'event': event.description
+                    'contact': contact.name,
+                    'eventDate': event.date,
+                    'eventDescription': event.description
                 })
     return events_dict
 
