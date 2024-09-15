@@ -45,7 +45,12 @@ def update_contact_plain_text(id: str, plain_text: str) -> dict:
         resourceName=resource_name,
         personFields='names,biographies'
     ).execute()
-    target_contact['biographies'][0]['value'] = plain_text
+    try:
+        target_contact['biographies'][0]['value'] = plain_text
+    except:
+        # insert a new entry into biographies
+        list = [{'value': plain_text}]
+        target_contact['biographies'] = list
     updated_contact = service.people().updateContact(
         resourceName=resource_name,
         body=target_contact,

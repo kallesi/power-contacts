@@ -128,7 +128,7 @@ def run_fastapi_server():
         uvicorn.run(app, host="127.0.0.1", port=FASTAPI_PORT)
 
 if __name__ == "__main__":
-    mode = RunMode.DEV
+    mode = RunMode.PROD
     if mode == RunMode.PROD:  # Mount the static files only in production mode
         app.mount("/app", StaticFiles(directory=STATIC_DIR, html=True), name="app")
     t = Thread(target=run_fastapi_server)
