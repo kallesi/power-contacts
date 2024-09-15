@@ -11,3 +11,5 @@ build
 # Files
 credentials.json
 token.json
+setup.py
+

@@ -22,16 +22,17 @@ and share it to the world.
 
 ### Usage 
 - You need to set up a Google Cloud app to be able to use this. (it's free)
-- Then, register yourself as the sole tester for your app.
+- Register yourself as the sole tester for your app.
 - Set up the OAuth2.0 consent screen.
+- More info [on the official Docs](https://developers.google.com/workspace/guides/create-credentials)
+- Make sure you enable the People API
 - Once you got all set up, you will receive a `credentials.json` - this will be the key to
 accessing your Google Cloud app.
+- Paste it into the install directory. 
 - When you launch main.py/the executable, it will automatically redirect you to the OAuth screen you had set up.
 - You only have to accept the terms once. A `token.json` will be generated
 at the root directory for future access.
 - Your should now be able to manage your contacts with Power Contacts.
-
-
 
 ### Future
 
