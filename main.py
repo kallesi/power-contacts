@@ -104,7 +104,7 @@ def get_events():
     """
     return handle_get_events()
 @app.get("/event/{date}")
-def get_events(date: str):
+def get_event(date: str):
     """
     Returns all events matching the date query
     """
@@ -135,7 +135,12 @@ if __name__ == "__main__":
     t.daemon = True
     t.start()
     if mode == RunMode.PROD:  # Launch the window only in production mode
-        webview.create_window('Power Contacts', f'http://localhost:{FASTAPI_PORT}/app/')
+        webview.create_window(
+            title='Power Contacts',
+            url=f'http://localhost:{FASTAPI_PORT}/app/',
+            height=960,
+            width=1280,
+        )
         webview.start()
         stop_event.set()  # Set stop_event after launching the window in production mode
     else:

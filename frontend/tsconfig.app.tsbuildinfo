@@ -1,1 +1,1 @@
-{"root":["./src/router.tsx","./src/constants.ts","./src/main.tsx","./src/vite-env.d.ts","./src/components/contactcard.tsx","./src/pages/home.tsx"],"version":"5.6.2"}
+{"root":["./src/router.tsx","./src/constants.ts","./src/main.tsx","./src/utils.ts","./src/vite-env.d.ts","./src/components/contactcard.tsx","./src/components/datepicker.tsx","./src/hooks/usefetch.tsx","./src/pages/contactpage.tsx","./src/pages/home.tsx"],"version":"5.6.2"}

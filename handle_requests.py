@@ -61,6 +61,7 @@ def handle_get_contact(id: str):
     return create_contact_object(contact)
 
 def handle_add_tag(id: str, tag: str):
+
     plain_text = get_plain_text(id)
     new_text = add_tag(
         plain_text=plain_text,

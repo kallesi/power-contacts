@@ -109,10 +109,10 @@ export default function Picker({ onDateChange }: PickerProps) {
   }, [datepickerHeaderDate]);
 
   return (
-    <div className='antialiased sans-serif'>
+    <div className='antialiased sans-serif h-auto'>
       <div>
-        <div className='container mx-auto px-4 py-2 md:py-10'>
-          <div className='mb-5 w-64'>
+        <div className='container'>
+          <div className='mb-5 w-full'>
             <div className='relative'>
               <input
                 type='hidden'
@@ -121,29 +121,11 @@ export default function Picker({ onDateChange }: PickerProps) {
               <input
                 type='text'
                 readOnly
-                className='input input-bordered max-w-xs cursor-pointer w-full pl-4 pr-10 py-3 leading-none'
+                className='input input-bordered cursor-pointer w-full leading-none'
                 placeholder='Select date'
                 value={format(selectedDate, 'yyyy-MM-dd')}
                 onClick={toggleDatepicker}
               />
-              <div
-                className='cursor-pointer absolute top-0 right-0 px-3 py-2'
-                onClick={toggleDatepicker}
-              >
-                <svg
-                  className='h-6 w-6 text-white'
-                  fill='none'
-                  viewBox='0 0 24 24'
-                  stroke='currentColor'
-                >
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth={2}
-                    d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'
-                  />
-                </svg>
-              </div>
               {showDatepicker && (
                 <div
                   className='card card-compact shadow-xl mt-12 rounded-lg p-4 top-0 left-0 absolute z-50 bg-base-100'

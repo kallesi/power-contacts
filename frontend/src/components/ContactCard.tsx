@@ -1,5 +1,6 @@
 import { getInitials } from '../utils';
 
+
 type ContactCardProps = {
   name: string;
   tags: string[];
@@ -25,7 +26,7 @@ function ContactCard({ name, tags, onClick }: ContactCardProps) {
         </div>
         <div className='flex flex-row flex-wrap justify-center items-center mt-2'>
           {tags.map((tag) => (
-            <div key={tag} className='badge badge-primary m-1 p-2 font-medium'>
+            <div key={crypto.randomUUID()} className='badge badge-primary m-1 p-2 font-medium'>
               {tag}
             </div>
           ))}
