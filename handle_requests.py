@@ -3,7 +3,7 @@ from google_api import get_contact, get_contacts, get_plain_text, update_contact
 from contact import Contact, create_contact_object
 from collections import defaultdict
 from tag import add_tag, remove_tag, update_tag
-
+from datetime import datetime
 def handle_get_contacts():
     contacts: list = get_contacts()
     contact_objects = []
@@ -22,7 +22,8 @@ def handle_get_tags():
                 'id': contact.id,
                 'name': contact.name,
             })
-    return tags_dict
+    sorted_tags_dict = {tag: tags_dict[tag] for tag in sorted(tags_dict)}
+    return sorted_tags_dict
 
 def handle_get_tag(tag: str):
     tags: dict = handle_get_tags()
@@ -41,10 +42,13 @@ def handle_get_events() -> dict[list[dict]]:
             if date:
                 events_dict[date].append({
                     'contact': contact.name,
+                    'contactId': contact.id,
                     'eventDate': event.date,
                     'eventDescription': event.description
                 })
-    return events_dict
+    sorted_events = sorted(events_dict.items(), key=lambda x: datetime.strptime(x[0], '%Y-%m-%d'))
+    sorted_events_dict = {date: events for date, events in sorted_events}
+    return sorted_events_dict
 
 def handle_get_event(date: str):
     events: dict[list[dict]] = handle_get_events()
@@ -117,6 +121,3 @@ def handle_update_event(id: str, date: str, description: str):
     )
     new_contact = update_contact_plain_text(id, new_text)
     return create_contact_object(new_contact)
-
-if __name__ == "__main__":
-    handle_get_tag('hb')

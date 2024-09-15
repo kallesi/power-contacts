@@ -1,13 +1,18 @@
 import { useState, useEffect } from 'react';
 
-function useFetch<T>(url: string): { data: T | null; error: Error | null } {
+type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
+
+function useFetch<T>(url: string, method: HttpMethod): { data: T | null; error: Error | null } {
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch(url);
+        const req = {
+          method: method
+        }
+        const res = await fetch(url, req);
         if (!res.ok) {
           throw new Error('Failed to fetch data');
         }
@@ -19,7 +24,7 @@ function useFetch<T>(url: string): { data: T | null; error: Error | null } {
     }
 
     fetchData();
-  }, [url]);
+  }, [method, url]);
 
   return { data, error };
 }

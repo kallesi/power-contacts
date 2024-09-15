@@ -1,8 +1,8 @@
 from google_auth import get_service
-from contact import Contact, create_contact_object, ContactField
-from utils import split_name
-def get_contacts() -> list[dict]:
+
+def get_contacts(page_size: int = 1000) -> list[dict]:
     service = get_service()
+    # First load
     results = (
         service
         .people()
@@ -11,15 +11,34 @@ def get_contacts() -> list[dict]:
             resourceName='people/me',
             personFields='names,biographies,emailAddresses,addresses',
             sortOrder='FIRST_NAME_ASCENDING',
-            pageSize=1000
+            pageSize=page_size
         )
         .execute()
     )
+    total_items = results.get('totalItems', '')
+    page_token = results.get('nextPageToken', '')
     connections = results.get('connections', [])
-    all_contacts = []
-    for connection in connections:
-        all_contacts.append(connection)
-    return all_contacts
+    # See if page size already exceeds total items
+    if total_items > page_size:
+        while len(connections) < total_items:
+            results = (
+                service
+                .people()
+                .connections()
+                .list(
+                    resourceName='people/me',
+                    personFields='names,biographies,emailAddresses,addresses',
+                    sortOrder='FIRST_NAME_ASCENDING',
+                    pageSize=page_size,
+                    pageToken=page_token
+                )
+                .execute()
+            )
+            print('Got another page, token: ' + page_token)
+            page_token = results.get('nextPageToken', '')
+            connections.extend(results.get('connections', []))
+    return connections
+
 
 def get_contact(id: str) -> dict:
     service = get_service()
@@ -59,3 +78,5 @@ def update_contact_plain_text(id: str, plain_text: str) -> dict:
     ).execute()
     return updated_contact
 
+if __name__ == "__main__":
+    get_contacts_paginated()

@@ -1,7 +1,10 @@
 import Picker from '../components/DatePicker';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { BACKEND_URL } from '../constants';
+import useFetch from '../hooks/useFetch';
+import { useParams } from 'react-router-dom';
+import NavBar from '../components/NavBar';
 
 type Event = {
   date: string;
@@ -15,35 +18,27 @@ type Contact = {
   events: Event[];
 };
 
-type Props = {
-  contact: Contact;
-  onClose: () => void;
-};
-
-function ContactPage({ contact, onClose }: Props) {
-  const [contactState, setContact] = useState<Contact>(contact);
+function ContactPageFull() {
+  const { id } = useParams();
+  const { data: contact } = useFetch<Contact | null>(
+    `${BACKEND_URL}/contact/${id}`,
+    'GET'
+  );
+  const [contactState, setContact] = useState<Contact | null>(null);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [eventText, setEventText] = useState('');
-
   const [tagText, setTagText] = useState('');
 
-  const [somethingChanged, setSomethingChanged] = useState(false);
-
-  const handleClose = () => {
-    // check if need to reload
-    if (somethingChanged) {
-      onClose();
-      window.location.reload();
-    } else {
-      onClose();
-    }
-  };
+  useEffect(() => {
+    setContact(contact);
+  }, [contact]);
 
   const handleDateChange = (date: Date) => {
     setSelectedDate(date);
   };
 
   const handleDeleteEvent = (eventToDelete: Event) => {
+    if (!contactState) return;
     const req = {
       method: 'DELETE',
     };
@@ -60,7 +55,6 @@ function ContactPage({ contact, onClose }: Props) {
       .then((data) => {
         console.log('Event deleted:', data);
         setContact(data);
-        setSomethingChanged(true);
       })
       .catch((error) => {
         console.error('Error:', error);
@@ -68,12 +62,10 @@ function ContactPage({ contact, onClose }: Props) {
   };
 
   const handleSubmitEvent = () => {
-    let matched = false;
-    contactState.events.forEach((event) => {
-      if (event.date === format(selectedDate, 'yyyy-MM-dd')) {
-        matched = true;
-      }
-    });
+    if (!contactState) return;
+    const matched = contactState.events.some(
+      (event) => event.date === format(selectedDate, 'yyyy-MM-dd')
+    );
 
     const req = {
       method: matched ? 'PUT' : 'POST',
@@ -95,7 +87,6 @@ function ContactPage({ contact, onClose }: Props) {
         console.log('Success:', data);
         setContact(data);
         setEventText('');
-        setSomethingChanged(true);
       })
       .catch((error) => {
         console.error('Error:', error);
@@ -103,12 +94,8 @@ function ContactPage({ contact, onClose }: Props) {
   };
 
   const handleAddTag = () => {
-    let matched = false;
-    contact.tags.forEach((tag) => {
-      if (tag === tagText) {
-        matched = true;
-      }
-    });
+    if (!contactState) return;
+    const matched = contactState.tags.includes(tagText);
     if (!matched) {
       const req = {
         method: 'POST',
@@ -124,7 +111,6 @@ function ContactPage({ contact, onClose }: Props) {
           console.log('Success:', data);
           setContact(data);
           setTagText('');
-          setSomethingChanged(true);
         })
         .catch((error) => {
           console.error('Error:', error);
@@ -133,6 +119,7 @@ function ContactPage({ contact, onClose }: Props) {
   };
 
   const handleDeleteTag = (tag: string) => {
+    if (!contactState) return;
     const req = {
       method: 'DELETE',
     };
@@ -146,7 +133,6 @@ function ContactPage({ contact, onClose }: Props) {
       .then((data) => {
         console.log('Success:', data);
         setContact(data);
-        setSomethingChanged(true);
       })
       .catch((error) => {
         console.error('Error:', error);
@@ -154,14 +140,19 @@ function ContactPage({ contact, onClose }: Props) {
   };
 
   return (
-    <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center'>
-      <div className='p-5 card bg-base-100 shadow-lg z-10 w-3/5 h-5/6 overflow-auto shadow-black'>
-        <div className='grid grid-rows-1 grid-cols-2'>
+    <div>
+      <NavBar
+        showSearch={false}
+        searchText=''
+        setSearchText={() => { }}
+      />
+      <div className='px-40 py-5 h-lvh'>
+        <div className='mt-15 grid grid-rows-1 grid-cols-2'>
           <h2 className='flex text-xl font-bold items-center'>
-            {contactState.name}
+            {contactState?.name}
           </h2>
           <div className='flex flex-row flex-wrap justify-center items-center mt-2'>
-            {contactState.tags.map((tag) => (
+            {contactState?.tags.map((tag) => (
               <div
                 key={tag}
                 className='badge badge-primary m-2 p-4 font-medium text-lg hover:bg-slate-400 hover:border-inherit transition-all ease-linear'
@@ -182,7 +173,7 @@ function ContactPage({ contact, onClose }: Props) {
               </tr>
             </thead>
             <tbody>
-              {contactState.events.map((event, index) => (
+              {contactState?.events.map((event, index) => (
                 <tr
                   key={index}
                   className='hover'
@@ -237,12 +228,8 @@ function ContactPage({ contact, onClose }: Props) {
           </div>
         </div>
       </div>
-      <div
-        className='fixed inset-0'
-        onClick={handleClose}
-      ></div>
     </div>
   );
 }
 
-export default ContactPage;
+export default ContactPageFull;

@@ -1,14 +1,13 @@
 import { getInitials } from '../utils';
 
-type ContactCardProps = {
-  name: string;
-  tags: string[];
+type EventPageCardProps = {
+  contactName: string;
+  description: string;
   onClick: () => void;
 };
 
-function ContactCard({ name, tags, onClick }: ContactCardProps) {
-  const initials = getInitials(name);
-
+function EventPageCard({ contactName, description, onClick }: EventPageCardProps) {
+  const initials = getInitials(contactName);
   return (
     <div
       className='card bg-base-100 h-40 shadow-lg shadow-stone-950 hover:bg-base-200 hover:transition-all hover:ease-linear m-2'
@@ -21,21 +20,14 @@ function ContactCard({ name, tags, onClick }: ContactCardProps) {
               <span className='text-base'>{initials}</span>
             </div>
           </div>
-          <span className='ml-4 truncate flex-grow'>{name}</span>
+          <span className='ml-4 truncate flex-grow'>{contactName}</span>
         </div>
-        <div className='flex flex-wrap mt-2'>
-          {tags.map((tag) => (
-            <div
-              key={crypto.randomUUID()}
-              className='badge badge-primary m-1 p-2 font-medium text-sm'
-            >
-              {tag}
-            </div>
-          ))}
+        <div>
+          <h2>{description}</h2>
         </div>
       </div>
     </div>
   );
 }
 
-export default ContactCard;
+export default EventPageCard;
