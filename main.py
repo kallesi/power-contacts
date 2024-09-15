@@ -1,21 +1,26 @@
+from threading import Thread, Event
+from enum import Enum
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
-
-import sys
-import threading
 import webview
-from http.server import SimpleHTTPRequestHandler, HTTPServer
-
 from handle_requests import handle_get_contacts, handle_get_contact, handle_get_tags, handle_get_tag, handle_get_events, handle_get_event
 from handle_requests import handle_add_tag, handle_add_event
 from handle_requests import handle_update_tag, handle_update_event
 from handle_requests import handle_remove_tag, handle_remove_event
-app = FastAPI()
 
+class RunMode(Enum):
+    DEV = 0
+    PROD = 1
+
+STATIC_DIR = "static"
+FASTAPI_PORT = 3001
+app = FastAPI()
 origins = [
-    'http://localhost:5173'
+    'http://127.0.0.1:3001',
+    'http://localhost:3001',
+    'http://localhost:5173',
 ]
 app.add_middleware(
     CORSMiddleware,
@@ -25,9 +30,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/")
 def read_root():
-    return "Success: Server is running"
+    return 'Server is online'
+
 @app.get("/contacts")
 def get_contacts():
     """
@@ -115,7 +122,25 @@ def get_tag(tag: str):
     """
     return handle_get_tag(tag)
 
+stop_event = Event()
+def run_fastapi_server():
+    while not stop_event.is_set():
+        uvicorn.run(app, host="127.0.0.1", port=FASTAPI_PORT)
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=3001)
-
+    mode = RunMode.PROD
+    if mode == RunMode.PROD:  # Mount the static files only in production mode
+        app.mount("/app", StaticFiles(directory=STATIC_DIR, html=True), name="app")
+    t = Thread(target=run_fastapi_server)
+    t.daemon = True
+    t.start()
+    if mode == RunMode.PROD:  # Launch the window only in production mode
+        webview.create_window('Power Contacts', f'http://localhost:{FASTAPI_PORT}/app/')
+        webview.start()
+        stop_event.set()  # Set stop_event after launching the window in production mode
+    else:
+        try:
+            while True:
+                pass  # Keep the main thread running in development mode
+        except KeyboardInterrupt:
+            stop_event.set()  # Set stop_event if KeyboardInterrupt occurs in development mod
