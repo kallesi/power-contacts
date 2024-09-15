@@ -4,6 +4,9 @@ venv
 .idea
 frontend/node_modules
 static
+dist
+build
+
 
 # Files
 credentials.json
