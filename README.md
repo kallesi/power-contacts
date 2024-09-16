@@ -4,10 +4,10 @@ Leverage the power of plain text.
 ---
 
 <img src="assets/favicon.ico" width=20% height=20%>
-<img src="assets/screencap_main_page.png" width=50% height=50%>
-<img src="assets/screencap_tags_page.png" width=50% height=50%>
-<img src="assets/screencap_contact_page.png" width=50% height=50%>
-<img src="assets/screencap_events_page.png" width=50% height=50%>
+<img src="assets/screencap_main_page.png">
+<img src="assets/screencap_tags_page.png">
+<img src="assets/screencap_contact_page.png">
+<img src="assets/screencap_events_page.png">
 
 
 ### Tags & Events:
