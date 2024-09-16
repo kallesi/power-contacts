@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import { BACKEND_URL } from '../constants';
+import favicon from '../assets/favicon.png';
 
 type NavBarProps = {
   searchText: string;
@@ -40,29 +41,33 @@ function NavBar({ searchText, setSearchText, showSearch = true }: NavBarProps) {
   };
 
   return (
-    <div className='navbar bg-primary h-10'>
+    <div className='navbar bg-base-300 h-10  shadow-2xl drop-shadow-lg shadow-gray-950'>
       <div className='flex-1'>
         <Link
           to='/app/'
-          className='btn btn-ghost text-xl font-bold text-primary-content'
+          className='btn btn-ghost text-xl font-bold text-white'
         >
-          Power Contacts
+          <div className='flex flex-row'>
+            <img src={favicon} alt="icon" width={30} height={20} />
+            <div className='p-2'></div>
+            <h1 className='text-white'>Power Contacts</h1>
+          </div>
         </Link>
         <Link
           to='/app/tags/'
-          className='btn btn-ghost text-xl font-normal text-primary-content'
+          className='btn btn-ghost text-lg font-normal  text-white'
         >
           Tags
         </Link>
         <Link
           to='/app/events/'
-          className='btn btn-ghost text-xl font-normal text-primary-content'
+          className='btn btn-ghost text-lg font-normal text-white'
         >
           Events
         </Link>
         <button
           onClick={handleAddContact}
-          className='btn btn-ghost text-xl font-normal text-primary-content hidden lg:inline'
+          className='btn btn-ghost text-lg font-normal  text-white'
         >
           Add Contact
         </button>
@@ -71,7 +76,7 @@ function NavBar({ searchText, setSearchText, showSearch = true }: NavBarProps) {
             <input
               type='text'
               placeholder='New Contact Name'
-              className='input input-bordered w-24 md:w-auto'
+              className='input input-bordered w-24 md:w-auto mx-2'
               value={newContact}
               onChange={(e) => setNewContact(e.target.value)}
             />
