@@ -21,7 +21,10 @@ function EventsPage() {
   const { data: events } = useFetch<Events>(`${BACKEND_URL}/events`, 'GET');
   const [localEvents, setLocalEvents] = useState<Events>({});
   const [searchText, setSearchText] = useState('');
-  const [selectedEvent, setSelectedEvent] = useState<{ date: string; events: Event[] } | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<{
+    date: string;
+    events: Event[];
+  } | null>(null);
 
   useEffect(() => {
     setLocalEvents(events || {});
@@ -32,12 +35,15 @@ function EventsPage() {
       setLocalEvents(events || {});
     } else {
       setLocalEvents(() => {
-        const filteredEvents = Object.entries(events || {}).reduce((acc, [date, eventList]) => {
-          if (date.toLowerCase().includes(searchText.toLowerCase())) {
-            acc[date] = eventList;
-          }
-          return acc;
-        }, {} as Events);
+        const filteredEvents = Object.entries(events || {}).reduce(
+          (acc, [date, eventList]) => {
+            if (date.toLowerCase().includes(searchText.toLowerCase())) {
+              acc[date] = eventList;
+            }
+            return acc;
+          },
+          {} as Events
+        );
         return filteredEvents;
       });
     }
@@ -74,7 +80,7 @@ function EventsPage() {
     }
   });
 
-  const renderEventCards = (events: Events) => (
+  const renderEventCards = (events: Events) =>
     Object.entries(events).map(([date, eventList]) => (
       <EventCard
         key={date}
@@ -83,8 +89,7 @@ function EventsPage() {
         date={date}
         onClick={() => handleEventClick(date, eventList)}
       />
-    ))
-  );
+    ));
 
   return (
     <div>
@@ -96,11 +101,15 @@ function EventsPage() {
         />
       </div>
       <div className='mt-20 p-5'>
-        <h2 className='text-xl font-bold'>In the Past:</h2>
-        <div className='grid grid-cols-4'>
-          {renderEventCards(groupedEvents.past)}
+        <div className='collapse bg-base-200'>
+          <input type='checkbox' />
+          <div className='collapse-title text-xl font-medium'>In the Past:</div>
+          <div className='collapse-content'>
+            <div className='grid grid-cols-4'>
+              {renderEventCards(groupedEvents.past)}
+            </div>
+          </div>
         </div>
-
         <h2 className='text-xl font-bold mt-10'>This Week:</h2>
         <div className='grid grid-cols-4'>
           {renderEventCards(groupedEvents.thisWeek)}
@@ -110,10 +119,15 @@ function EventsPage() {
         <div className='grid grid-cols-4'>
           {renderEventCards(groupedEvents.thisMonth)}
         </div>
-
-        <h2 className='text-xl font-bold mt-10'>Further Down:</h2>
-        <div className='grid grid-cols-4'>
-          {renderEventCards(groupedEvents.furtherDown)}
+        <div className='h-12'></div>
+        <div className='collapse bg-base-200'>
+          <input type='checkbox' />
+          <div className='collapse-title text-xl font-medium'>Further Down:</div>
+          <div className='collapse-content'>
+            <div className='grid grid-cols-4'>
+              {renderEventCards(groupedEvents.furtherDown)}
+            </div>
+          </div>
         </div>
       </div>
       {selectedEvent && (
