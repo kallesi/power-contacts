@@ -338,23 +338,29 @@ function ContactPageFull() {
               </tr>
             </thead>
             <tbody>
-              {contactState?.events.map((event, index) => (
-                <tr
-                  key={index}
-                  className='hover'
-                >
-                  <th>{event.date}</th>
-                  <td>{event.description}</td>
-                  <td>
-                    <button
-                      className='btn btn-outline btn-error'
-                      onClick={() => handleDeleteEvent(event)}
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {contactState?.events
+                .sort((a, b) => {
+                  const dateA = new Date(a.date).getTime();
+                  const dateB = new Date(b.date).getTime();
+                  return dateA - dateB;
+                })
+                .map((event, index) => (
+                  <tr
+                    key={index}
+                    className='hover'
+                  >
+                    <th>{event.date}</th>
+                    <td>{event.description}</td>
+                    <td>
+                      <button
+                        className='btn btn-outline btn-error'
+                        onClick={() => handleDeleteEvent(event)}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
           <div className='grid grid-cols-2 grid-rows-2'>

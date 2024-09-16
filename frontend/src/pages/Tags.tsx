@@ -85,7 +85,7 @@ function Tags() {
           showSearch={true}
         />
       </div>
-      <div className='mt-20 p-5 grid grid-cols-5'>
+      <div className='mt-20 p-5 grid md:grid-cols-4 lg:grid-cols-5 sm:grid-cols-2'>
         {Object.entries(localTags).map(([tag, contacts]) => (
           <TagCard
             key={tag}

@@ -30,7 +30,7 @@ function ContactPage({ contact, onClose }: Props) {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [eventText, setEventText] = useState('');
   const [tagText, setTagText] = useState('');
-  const [notesText, setNotesText] = useState('')
+  const [notesText, setNotesText] = useState('');
   const [somethingChanged, setSomethingChanged] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [showToast, setShowToast] = useState(false);
@@ -181,7 +181,10 @@ function ContactPage({ contact, onClose }: Props) {
     const req = {
       method: 'PUT',
     };
-    fetch(`${BACKEND_URL}/contact/${contactState?.id}?notes=${encodedNotesText}`, req)
+    fetch(
+      `${BACKEND_URL}/contact/${contactState?.id}?notes=${encodedNotesText}`,
+      req
+    )
       .then((response) => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
@@ -248,23 +251,29 @@ function ContactPage({ contact, onClose }: Props) {
               </tr>
             </thead>
             <tbody>
-              {contactState.events.map((event, index) => (
-                <tr
-                  key={index}
-                  className='hover'
-                >
-                  <th>{event.date}</th>
-                  <td>{event.description}</td>
-                  <td>
-                    <button
-                      className='btn btn-outline btn-error'
-                      onClick={() => handleDeleteEvent(event)}
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {contactState?.events
+                .sort((a, b) => {
+                  const dateA = new Date(a.date).getTime();
+                  const dateB = new Date(b.date).getTime();
+                  return dateA - dateB;
+                })
+                .map((event, index) => (
+                  <tr
+                    key={index}
+                    className='hover'
+                  >
+                    <th>{event.date}</th>
+                    <td>{event.description}</td>
+                    <td>
+                      <button
+                        className='btn btn-outline btn-error'
+                        onClick={() => handleDeleteEvent(event)}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
           <div className='grid grid-cols-2 grid-rows-1'>
