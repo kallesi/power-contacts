@@ -2,12 +2,13 @@
 Leverages the power of plain text.
 
 ---
+
 <img src="assets/favicon.ico" width=20% height=20%>
----
+
 <img src="assets/screencap_contact_page.png" width=50% height=50%>
----
+
 <img src="assets/screencap_events_page.png" width=50% height=50%>
----
+
 
 ### Tags & Events:
 - You need tags to organise people from different areas of life
