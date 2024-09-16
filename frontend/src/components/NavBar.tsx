@@ -33,7 +33,7 @@ function NavBar({ searchText, setSearchText, showSearch = true }: NavBarProps) {
       .then((data) => {
         console.log('Success:', data);
         setIsAddingContact(false);
-        window.location.reload();
+        setNewContact('');
       })
       .catch((error) => {
         console.error('Error:', error);
