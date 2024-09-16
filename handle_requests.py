@@ -1,5 +1,6 @@
 from event import add_event, remove_event, update_event
 from google_api import get_contact, get_contacts, get_plain_text, update_contact_plain_text
+from google_api import delete_contact, create_contact, rename_contact
 from contact import Contact, create_contact_object
 from collections import defaultdict
 from tag import add_tag, remove_tag, update_tag
@@ -121,3 +122,23 @@ def handle_update_event(id: str, date: str, description: str):
     )
     new_contact = update_contact_plain_text(id, new_text)
     return create_contact_object(new_contact)
+
+def handle_update_notes(id: str, notes: str):
+    note_strings = notes.split('\n')
+    contact: Contact = create_contact_object(get_contact(id))
+    contact.notes = note_strings
+    plain_text = contact.get_sorted_plain_text()
+    new_contact = update_contact_plain_text(id, plain_text)
+    return create_contact_object(new_contact)
+
+def handle_create_contact(name: str):
+    new_contact = create_contact(name)
+    return create_contact_object(new_contact)
+
+def handle_delete_contact(id: str):
+    deleted_contact = delete_contact(id)
+    return deleted_contact
+
+def handle_rename_contact(id: str, name: str):
+    renamed_contact = rename_contact(id, name)
+    return create_contact_object(renamed_contact)

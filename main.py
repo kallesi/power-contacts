@@ -7,8 +7,9 @@ import uvicorn
 import webview
 from handle_requests import handle_get_contacts, handle_get_contact, handle_get_tags, handle_get_tag, handle_get_events, handle_get_event
 from handle_requests import handle_add_tag, handle_add_event
-from handle_requests import handle_update_tag, handle_update_event
+from handle_requests import handle_update_tag, handle_update_event, handle_update_notes
 from handle_requests import handle_remove_tag, handle_remove_event
+from handle_requests import handle_delete_contact, handle_create_contact, handle_rename_contact
 
 class RunMode(Enum):
     DEV = 0
@@ -41,6 +42,14 @@ def get_contacts():
     Returns all contacts
     """
     return handle_get_contacts()
+
+@app.post("/contact/create")
+def create_contact(name: str):
+    """
+    Creates a new contact
+    """
+    return handle_create_contact(name)
+
 @app.get("/contact/{id}")
 def get_contact(id: str):
     """
@@ -68,7 +77,9 @@ def put_contact_details(id: str,
                         old_tag: str = None,
                         new_tag: str = None,
                         date: str = None,
-                        description: str = None
+                        description: str = None,
+                        rename_new_name: str = None,
+                        notes: str = None,
     ):
     """
     Returns full details of updated contact
@@ -77,13 +88,18 @@ def put_contact_details(id: str,
         return handle_update_tag(id, old_tag, new_tag)
     elif date and description:
         return handle_update_event(id, date, description)
+    elif rename_new_name:
+        return handle_rename_contact(id, rename_new_name)
+    elif notes != None:
+        return handle_update_notes(id, notes)
     else:
         return {'Error': 'Please provide tag or event to update'}
 
 @app.delete("/contact/{id}")
 def delete_contact_details(id: str,
                            tag: str = None,
-                           date: str = None
+                           date: str = None,
+                           delete_contact: bool = False
     ):
     """
     Returns full details of updated contact
@@ -94,6 +110,8 @@ def delete_contact_details(id: str,
         return handle_remove_tag(id, tag)
     elif date:
         return handle_remove_event(id, date)
+    elif delete_contact:
+        return handle_delete_contact(id)
     else:
         return {'Error': 'Please provide tag or event to delete'}
 
@@ -121,6 +139,7 @@ def get_tag(tag: str):
     Returns all tags starting with the phrase
     """
     return handle_get_tag(tag)
+
 
 stop_event = Event()
 def run_fastapi_server():

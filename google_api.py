@@ -1,3 +1,4 @@
+import utils
 from google_auth import get_service
 
 def get_contacts(page_size: int = 1000) -> list[dict]:
@@ -78,5 +79,50 @@ def update_contact_plain_text(id: str, plain_text: str) -> dict:
     ).execute()
     return updated_contact
 
+def rename_contact(id: str, name: str):
+    given_name, family_name = utils.split_name(name)
+    service = get_service()
+    resource_name: str = f'people/{id}'
+    target_contact = service.people().get(
+        resourceName=resource_name,
+        personFields='names'
+    ).execute()
+    target_contact['names'][0]['givenName'] = given_name
+    target_contact['names'][0]['familyName'] = family_name
+    target_contact['names'][0]['displayName'] = name
+    target_contact['names'][0]['unstructuredName'] = name
+    updated_contact = service.people().updateContact(
+        resourceName=resource_name,
+        updatePersonFields='names',
+        body=target_contact
+    ).execute()
+    return updated_contact
+
+def delete_contact(id: str):
+    service = get_service()
+    resource_name: str = f'people/{id}'
+    deleted_contact = service.people().deleteContact(
+        resourceName=resource_name,
+    ).execute()
+    return deleted_contact
+
+def create_contact(name: str):
+    given_name, family_name = utils.split_name(name)
+    service = get_service()
+    body = {
+        "names": [
+            {
+                "givenName": given_name,
+                "familyName": family_name
+            }
+        ]
+    }
+    added_contact = service.people().createContact(
+        personFields='names',
+        body=body
+    ).execute()
+    return added_contact
+
+
 if __name__ == "__main__":
-    get_contacts_paginated()
+    create_contact()

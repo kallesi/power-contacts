@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import ContactCard from '../components/ContactCard';
+import { ContactCard } from '../components/ContactCard';
 import ContactPage from '../components/ContactPage';
 import { BACKEND_URL } from '../constants';
 import useFetch from '../hooks/useFetch';
@@ -14,6 +14,7 @@ type Contact = {
   id: string;
   name: string;
   tags: string[];
+  notes: string[]
   events: Event[];
 };
 

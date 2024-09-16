@@ -1,4 +1,4 @@
-import ContactCard from './ContactCard';
+import { ContactCardSimple } from './ContactCard';
 import { useNavigate } from 'react-router-dom';
 
 type Contact = {
@@ -24,11 +24,10 @@ function TagPage({ tag, contacts, onClose }: Props) {
     <div className='fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-20'>
       <div className='p-5 card bg-base-100 shadow-lg z-10 w-3/5 h-5/6 overflow-auto shadow-black'>
         <h2 className='text-xl font-bold mb-4'>#{tag}</h2>
-        <ul className='grid grid-cols-4 ml-5'>
+        <ul className='lg:grid lg:grid-cols-4 md:grid md:grid-cols-2    ml-5'>
           {contacts.map((contact) => (
-            <ContactCard
+            <ContactCardSimple
               name={contact.name}
-              tags={[]}
               key={contact.id}
               onClick={() => handleClick(contact.id)}
             />

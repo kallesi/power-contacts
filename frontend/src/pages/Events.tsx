@@ -79,6 +79,7 @@ function EventsPage() {
       <EventCard
         key={date}
         events={eventList}
+        firstEventName={eventList[0].eventDescription}
         date={date}
         onClick={() => handleEventClick(date, eventList)}
       />
@@ -96,22 +97,22 @@ function EventsPage() {
       </div>
       <div className='mt-20 p-5'>
         <h2 className='text-xl font-bold'>In the Past:</h2>
-        <div className='grid grid-cols-5'>
+        <div className='grid grid-cols-4'>
           {renderEventCards(groupedEvents.past)}
         </div>
 
         <h2 className='text-xl font-bold mt-10'>This Week:</h2>
-        <div className='grid grid-cols-5'>
+        <div className='grid grid-cols-4'>
           {renderEventCards(groupedEvents.thisWeek)}
         </div>
 
         <h2 className='text-xl font-bold mt-10'>This Month:</h2>
-        <div className='grid grid-cols-5'>
+        <div className='grid grid-cols-4'>
           {renderEventCards(groupedEvents.thisMonth)}
         </div>
 
         <h2 className='text-xl font-bold mt-10'>Further Down:</h2>
-        <div className='grid grid-cols-5'>
+        <div className='grid grid-cols-4'>
           {renderEventCards(groupedEvents.furtherDown)}
         </div>
       </div>

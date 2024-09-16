@@ -1,6 +1,5 @@
 import EventPageCard from './EventPageCard';
-import { useNavigate } from 'react-router-dom'
-
+import { useNavigate } from 'react-router-dom';
 
 type Event = {
   contact: string;
@@ -20,7 +19,7 @@ function EventPage({ date, events, onClose }: EventPageProps) {
 
   const redirect = (contactId: string) => {
     navigate(`/app/contact/${contactId}`);
-  }
+  };
 
   return (
     <div
@@ -34,7 +33,7 @@ function EventPage({ date, events, onClose }: EventPageProps) {
         <div className='flex justify-between items-center mb-4'>
           <h2 className='text-2xl font-bold'>{date}</h2>
         </div>
-        <ul>
+        <div className='grid grid-cols-3'>
           {events.map((event) => (
             <div key={event.contactId}>
               <EventPageCard
@@ -42,10 +41,9 @@ function EventPage({ date, events, onClose }: EventPageProps) {
                 description={event.eventDescription}
                 onClick={() => redirect(event.contactId)}
               />
-
             </div>
           ))}
-        </ul>
+        </div>
       </div>
     </div>
   );

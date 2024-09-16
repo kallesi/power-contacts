@@ -4,6 +4,8 @@ import { format } from 'date-fns';
 import { BACKEND_URL } from '../constants';
 import { FaExpandAlt } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
+import Toast from './Toast';
 
 type Event = {
   date: string;
@@ -14,6 +16,7 @@ type Contact = {
   id: string;
   name: string;
   tags: string[];
+  notes: string[];
   events: Event[];
 };
 
@@ -27,7 +30,17 @@ function ContactPage({ contact, onClose }: Props) {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [eventText, setEventText] = useState('');
   const [tagText, setTagText] = useState('');
+  const [notesText, setNotesText] = useState('')
   const [somethingChanged, setSomethingChanged] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [showToast, setShowToast] = useState(false);
+
+  useEffect(() => {
+    if (contact) {
+      const allNotes = contact.notes.join('\n');
+      setNotesText(allNotes);
+    }
+  }, [contact]);
 
   const handleClose = () => {
     // check if need to reload
@@ -61,6 +74,7 @@ function ContactPage({ contact, onClose }: Props) {
         console.log('Event deleted:', data);
         setContact(data);
         setSomethingChanged(true);
+        handleShowToastMessage('Success');
       })
       .catch((error) => {
         console.error('Error:', error);
@@ -68,6 +82,7 @@ function ContactPage({ contact, onClose }: Props) {
   };
 
   const handleSubmitEvent = () => {
+    if (eventText === '') return;
     let matched = false;
     contactState.events.forEach((event) => {
       if (event.date === format(selectedDate, 'yyyy-MM-dd')) {
@@ -96,6 +111,7 @@ function ContactPage({ contact, onClose }: Props) {
         setContact(data);
         setEventText('');
         setSomethingChanged(true);
+        handleShowToastMessage('Success');
       })
       .catch((error) => {
         console.error('Error:', error);
@@ -103,6 +119,7 @@ function ContactPage({ contact, onClose }: Props) {
   };
 
   const handleAddTag = () => {
+    if (tagText === '') return;
     let matched = false;
     contact.tags.forEach((tag) => {
       if (tag === tagText) {
@@ -125,6 +142,7 @@ function ContactPage({ contact, onClose }: Props) {
           setContact(data);
           setTagText('');
           setSomethingChanged(true);
+          handleShowToastMessage('Success');
         })
         .catch((error) => {
           console.error('Error:', error);
@@ -147,10 +165,51 @@ function ContactPage({ contact, onClose }: Props) {
         console.log('Success:', data);
         setContact(data);
         setSomethingChanged(true);
+        handleShowToastMessage('Success');
       })
       .catch((error) => {
         console.error('Error:', error);
       });
+  };
+
+  const handleUpdateNotes = () => {
+    let encodedNotesText;
+    if (notesText === '') {
+      encodedNotesText = '';
+    }
+    encodedNotesText = encodeURIComponent(notesText); // Encode the notesText
+    const req = {
+      method: 'PUT',
+    };
+    fetch(`${BACKEND_URL}/contact/${contactState?.id}?notes=${encodedNotesText}`, req)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log('Success:', data);
+        setContact(data);
+
+        const allNotes = data.notes.join('\n');
+        console.log(`Notes updated to ${allNotes}`);
+        setSomethingChanged(true);
+        setNotesText(allNotes);
+        handleShowToastMessage('Success');
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  };
+
+  const handleShowToastMessage = (message: string) => {
+    setToastMessage(message);
+    setShowToast(true);
+
+    setTimeout(() => {
+      setShowToast(false);
+    }, 2000);
   };
 
   return (
@@ -240,6 +299,27 @@ function ContactPage({ contact, onClose }: Props) {
               >
                 Add Tag
               </button>
+            </div>
+            <div className='grid grid-rows-1 grid-cols-1 m-2 col-span-2'>
+              <textarea
+                placeholder='Notes'
+                className='textarea textarea-bordered textarea-lg w-full my-2'
+                value={notesText.replace(/\n/g, '\n')}
+                onChange={(e) => setNotesText(e.target.value)}
+              ></textarea>
+              <button
+                className='btn btn-xs sm:btn-sm md:btn-md lg:btn-md'
+                onClick={handleUpdateNotes}
+              >
+                Update Notes
+              </button>
+              {showToast && (
+                <div className='fixed top-0 left-0 w-full flex items-center justify-center'>
+                  <div className='absolute z-50 top-2'>
+                    <Toast message={toastMessage} />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
