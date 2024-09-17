@@ -42,7 +42,7 @@ function EventPage({ date, events, onClose }: EventPageProps) {
       onClick={onClose}
     >
       <div
-        className='mt-8 p-5 card bg-base-100 shadow-lg z-30 w-3/5 h-5/6 overflow-auto shadow-black'
+        className='mt-8 p-5 card bg-base-100 shadow-md z-30 w-3/5 h-5/6 overflow-auto shadow-slate-950'
         onClick={(e) => e.stopPropagation()}
       >
         <div className='flex justify-between items-center mb-4'>

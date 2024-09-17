@@ -1,10 +1,9 @@
 import Picker from './DatePicker';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { BACKEND_URL } from '../constants';
 import { FaExpandAlt } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import { useEffect } from 'react';
 import Toast from './Toast';
 
 type Event = {
@@ -57,7 +56,6 @@ function ContactPage({ contact, onClose }: Props) {
   }, [onClose]);
 
   const handleClose = () => {
-    // check if need to reload
     if (somethingChanged) {
       onClose();
       window.location.reload();
@@ -191,7 +189,7 @@ function ContactPage({ contact, onClose }: Props) {
     if (notesText === '') {
       encodedNotesText = '';
     }
-    encodedNotesText = encodeURIComponent(notesText); // Encode the notesText
+    encodedNotesText = encodeURIComponent(notesText);
     const req = {
       method: 'PUT',
     };
@@ -228,11 +226,10 @@ function ContactPage({ contact, onClose }: Props) {
       setShowToast(false);
     }, 2000);
   };
-
   return (
     <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20'>
-      <div className='p-5 card bg-base-100 shadow-lg z-10 w-3/5 h-5/6 overflow-auto shadow-black relative'>
-        <div className='absolute top-4 right-4'>
+      <div className='p-5 card bg-base-100 shadow-lg z-10 w-3/5 overflow-y-scroll h-5/6 shadow-black relative'>
+        <div className='absolute top-4 right-4 z-50'>
           <Link to={`/app/contact/${contactState.id}`}>
             <button className='btn btn-neutral'>
               <FaExpandAlt />
@@ -240,10 +237,10 @@ function ContactPage({ contact, onClose }: Props) {
           </Link>
         </div>
         <div className='grid grid-rows-1 grid-cols-2'>
-          <h2 className='flex text-xl font-bold items-center'>
+          <h2 className='flex text-xl font-bold items-center min-h-14'>
             {contactState.name}
           </h2>
-          <div className='flex flex-row flex-wrap justify-center items-center mt-2'>
+          <div className='flex flex-row flex-wrap justify-center items-center mt-2 mr-12'>
             {contactState.tags.map((tag) => (
               <div
                 key={tag}
@@ -256,15 +253,15 @@ function ContactPage({ contact, onClose }: Props) {
           </div>
         </div>
         {contactState && contactState.events.length > 0 && (
-          <div className='collapse collapse-arrow bg-base-200 w-full my-3'>
+          <div className='collapse overflow-visible collapse-arrow bg-base-200 w-full my-3'>
             <input type='checkbox' />
             <div className='collapse-title text-xl font-medium'>
               Events ({contactState.events.length})
             </div>
-            <div className='collapse-content overflow-y-auto'>
-              <table className='table'>
+            <div className='collapse-content'>
+              <table className='table table-md'>
                 <thead>
-                  <tr>
+                  <tr className='text-base'>
                     <th>Date</th>
                     <th>Event</th>
                     <th>Delete</th>
@@ -280,13 +277,12 @@ function ContactPage({ contact, onClose }: Props) {
                     .map((event, index) => (
                       <tr
                         key={index}
-                        className='hover'
                       >
                         <th>{event.date}</th>
                         <td>{event.description}</td>
                         <td>
                           <button
-                            className='btn btn-outline btn-error'
+                            className='btn btn-outline btn-sm btn-error'
                             onClick={() => handleDeleteEvent(event)}
                           >
                             Delete
@@ -299,7 +295,7 @@ function ContactPage({ contact, onClose }: Props) {
             </div>
           </div>
         )}
-        <div className='overflow-x-auto h-full relative'>
+        <div className='h-full relative'>
           <div className='grid grid-cols-2 grid-rows-1'>
             <div className='grid grid-rows-3 grid-cols-1 m-2'>
               <Picker onDateChange={handleDateChange} />
