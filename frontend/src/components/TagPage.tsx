@@ -1,5 +1,6 @@
 import { ContactCardSimple } from './ContactCard';
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 type Contact = {
   id: string;
@@ -14,6 +15,20 @@ type Props = {
 
 function TagPage({ tag, contacts, onClose }: Props) {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [onClose]);
 
 
   const handleClick = (id: string) => {

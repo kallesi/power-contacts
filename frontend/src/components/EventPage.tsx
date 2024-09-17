@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import EventPageCard from './EventPageCard';
 import { useNavigate } from 'react-router-dom';
 
@@ -20,6 +21,20 @@ function EventPage({ date, events, onClose }: EventPageProps) {
   const redirect = (contactId: string) => {
     navigate(`/app/contact/${contactId}`);
   };
+
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [onClose]);
 
   return (
     <div
