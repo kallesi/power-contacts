@@ -11,4 +11,5 @@ build
 credentials.json
 token.json
 setup.py
+local_contacts.pickle
 
