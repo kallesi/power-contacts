@@ -89,7 +89,6 @@ function EventsPage() {
       <EventCard
         key={date}
         events={eventList}
-        firstEventName={eventList[0].eventDescription}
         date={date}
         onClick={() => handleEventClick(date, eventList)}
       />
