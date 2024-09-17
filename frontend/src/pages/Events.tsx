@@ -4,7 +4,8 @@ import useFetch from '../hooks/useFetch';
 import NavBar from '../components/NavBar';
 import EventPage from '../components/EventPage';
 import EventCard from '../components/EventCard';
-import { isThisWeek, isThisMonth, isBefore } from 'date-fns';
+import { isThisMonth, isBefore, parseISO, startOfWeek, endOfWeek } from 'date-fns';
+import { toZonedTime } from 'date-fns-tz';
 
 type Event = {
   contact: string;
@@ -57,7 +58,10 @@ function EventsPage() {
     setSelectedEvent(null);
   };
 
-  const today = new Date();
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const today = toZonedTime(new Date(), timeZone);
+  const startOfCurrentWeek = startOfWeek(today, { weekStartsOn: 1 });
+  const endOfCurrentWeek = endOfWeek(today, { weekStartsOn: 1 });
 
   const groupedEvents = {
     past: {} as Events,
@@ -67,11 +71,11 @@ function EventsPage() {
   };
 
   Object.entries(localEvents).forEach(([date, eventList]) => {
-    const eventDate = new Date(date);
+    const eventDate = toZonedTime(parseISO(date), timeZone);
 
-    if (isBefore(eventDate, today)) {
+    if (isBefore(eventDate, startOfCurrentWeek)) {
       groupedEvents.past[date] = eventList;
-    } else if (isThisWeek(eventDate)) {
+    } else if (eventDate >= startOfCurrentWeek && eventDate <= endOfCurrentWeek) {
       groupedEvents.thisWeek[date] = eventList;
     } else if (isThisMonth(eventDate)) {
       groupedEvents.thisMonth[date] = eventList;

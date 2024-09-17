@@ -42,6 +42,20 @@ function ContactPage({ contact, onClose }: Props) {
     }
   }, [contact]);
 
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [onClose]);
+
   const handleClose = () => {
     // check if need to reload
     if (somethingChanged) {
@@ -241,41 +255,51 @@ function ContactPage({ contact, onClose }: Props) {
             ))}
           </div>
         </div>
-        <div className='overflow-x-auto h-full relative'>
-          <table className='table'>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Event</th>
-                <th>Delete</th>
-              </tr>
-            </thead>
-            <tbody>
-              {contactState?.events
-                .sort((a, b) => {
-                  const dateA = new Date(a.date).getTime();
-                  const dateB = new Date(b.date).getTime();
-                  return dateA - dateB;
-                })
-                .map((event, index) => (
-                  <tr
-                    key={index}
-                    className='hover'
-                  >
-                    <th>{event.date}</th>
-                    <td>{event.description}</td>
-                    <td>
-                      <button
-                        className='btn btn-outline btn-error'
-                        onClick={() => handleDeleteEvent(event)}
-                      >
-                        Delete
-                      </button>
-                    </td>
+        {contactState && contactState.events.length > 0 && (
+          <div className='collapse collapse-arrow bg-base-200 w-full my-3'>
+            <input type='checkbox' />
+            <div className='collapse-title text-xl font-medium'>
+              Events ({contactState.events.length})
+            </div>
+            <div className='collapse-content overflow-y-auto'>
+              <table className='table'>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Event</th>
+                    <th>Delete</th>
                   </tr>
-                ))}
-            </tbody>
-          </table>
+                </thead>
+                <tbody>
+                  {contactState.events
+                    .sort((a, b) => {
+                      const dateA = new Date(a.date).getTime();
+                      const dateB = new Date(b.date).getTime();
+                      return dateA - dateB;
+                    })
+                    .map((event, index) => (
+                      <tr
+                        key={index}
+                        className='hover'
+                      >
+                        <th>{event.date}</th>
+                        <td>{event.description}</td>
+                        <td>
+                          <button
+                            className='btn btn-outline btn-error'
+                            onClick={() => handleDeleteEvent(event)}
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+        <div className='overflow-x-auto h-full relative'>
           <div className='grid grid-cols-2 grid-rows-1'>
             <div className='grid grid-rows-3 grid-cols-1 m-2'>
               <Picker onDateChange={handleDateChange} />
