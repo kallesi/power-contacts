@@ -17,7 +17,7 @@ function ContactCard({ name, tags, onClick }: ContactCardProps) {
 
   return (
     <div
-      className='card bg-base-100 h-40 shadow-lg shadow-stone-950 hover:bg-base-200 hover:transition-all hover:ease-linear m-2'
+      className='card bg-base-100 h-40 shadow-md shadow-stone-950 hover:bg-base-200 hover:transition-all hover:ease-linear m-2'
       onClick={onClick}
     >
       <div className='card-body flex flex-col justify-between h-full p-4'>
@@ -30,10 +30,10 @@ function ContactCard({ name, tags, onClick }: ContactCardProps) {
           <span className='ml-4 truncate flex-grow'>{name}</span>
         </div>
         <div className='flex flex-wrap mt-2'>
-          {tags.map((tag) => (
+          {tags.slice(0, 4).map((tag) => (
             <div
               key={crypto.randomUUID()}
-              className='badge badge-primary m-1 p-2 font-medium text-sm'
+              className='badge badge-primary m-1 p-2 font-medium sm:text-xs lg:text-sm'
             >
               {tag}
             </div>

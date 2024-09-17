@@ -313,7 +313,7 @@ function ContactPageFull() {
           </div>
         )}
         <div className='mt-15 grid grid-rows-1 grid-cols-2'>
-          <h2 className='flex text-xl font-bold items-center'>
+          <h2 className='flex text-xl font-bold items-center min-h-14'>
             {contactState?.name}
           </h2>
           <div className='flex flex-row flex-wrap justify-center items-center mt-2'>
@@ -329,15 +329,15 @@ function ContactPageFull() {
           </div>
         </div>
         {contactState && contactState.events.length > 0 && (
-          <div className='collapse collapse-arrow bg-base-200 w-full my-3'>
+          <div className='collapse overflow-visible collapse-arrow bg-base-200 w-full my-3'>
             <input type='checkbox' />
             <div className='collapse-title text-xl font-medium'>
               Events ({contactState.events.length})
             </div>
             <div className='collapse-content'>
-              <table className='table'>
+              <table className='table table-md'>
                 <thead>
-                  <tr>
+                  <tr className='text-base'>
                     <th>Date</th>
                     <th>Event</th>
                     <th>Delete</th>
@@ -353,13 +353,12 @@ function ContactPageFull() {
                     .map((event, index) => (
                       <tr
                         key={index}
-                        className='hover'
                       >
                         <th>{event.date}</th>
                         <td>{event.description}</td>
                         <td>
                           <button
-                            className='btn btn-outline btn-error'
+                            className='btn btn-outline btn-sm btn-error'
                             onClick={() => handleDeleteEvent(event)}
                           >
                             Delete

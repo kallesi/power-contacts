@@ -13,7 +13,7 @@ type EventCardProps = {
 function EventCard({ date, firstEventName, events, onClick }: EventCardProps) {
   return (
     <div
-      className='card bg-base-100 h-20 shadow-lg shadow-stone-950 hover:bg-base-200 hover:transition-all hover:ease-linear m-2'
+      className='card bg-base-100 h-20 shadow-md shadow-stone-950 hover:bg-base-200 hover:transition-all hover:ease-linear m-2'
       onClick={onClick}
     >
       <div className='card-body flex flex-col justify-between h-full p-4'>

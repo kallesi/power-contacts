@@ -12,7 +12,7 @@ type TagCardProps = {
 function TagCard({ tag, people, onClick }: TagCardProps) {
   return (
     <div
-      className='card bg-base-100 h-20 shadow-lg shadow-stone-950 hover:bg-base-200 hover:transition-all hover:ease-linear m-2'
+      className='card bg-base-100 h-20 shadow-md shadow-stone-950 hover:bg-base-200 hover:transition-all hover:ease-linear m-2'
       onClick={onClick}
     >
       <div className='card-body flex flex-col justify-between h-full p-4'>
@@ -22,7 +22,7 @@ function TagCard({ tag, people, onClick }: TagCardProps) {
               <span className='text-base'>#</span>
             </div>
           </div>
-          <span className='ml-4 truncate flex-grow'>{tag}</span>
+          <span className='ml-4 truncate flex-grow font-semibold text-base'>{tag}</span>
           <div className="badge badge-primary text-lg">{people.length}</div>
         </div>
       </div>
