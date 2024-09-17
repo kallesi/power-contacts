@@ -10,12 +10,22 @@ class Contact:
     def __init__(self,
                  id: str,
                  names: str,
+                 phone_numbers: list[str],
+                 emails: list[str],
                  text: str,
     ):
         self.id = id
         self.name = names
+        self.phoneNumbers = phone_numbers
+        self.emails = emails
         text_attributes = self._split_text(text)
         self.tags, self.events, self.notes = self._process_plain_text(text_attributes)
+
+    def __eq__(self, other):
+        if not isinstance(other, Contact):
+            return False
+        return self.__dict__ == other.__dict__
+
     def __repr__(self):
         return self.name
     def __str__(self):
@@ -62,10 +72,22 @@ def create_contact_object(contact_response: dict):
     biographies: str = contact_response.get('biographies', '')
     if not biographies == '':
         biographies = biographies[0].get('value', '')
-    person = Contact(
+    unprocessed_phone_numbers = contact_response.get('phoneNumbers', [])
+    phone_numbers = []
+    if not unprocessed_phone_numbers == '':
+        for number in unprocessed_phone_numbers:
+            phone_numbers.append(number['value'])
+    unprocessed_emails = contact_response.get('emailAddresses', [])
+    emails = []
+    if not unprocessed_emails == '':
+        for email in unprocessed_emails:
+            emails.append(email['value'])
+        person = Contact(
             id=id,
             names=names,
-            text=biographies
-    )
+            phone_numbers=phone_numbers,
+            emails=emails,
+            text=biographies,
+        )
     return person
 

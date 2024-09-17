@@ -14,6 +14,8 @@ type Event = {
 type Contact = {
   id: string;
   name: string;
+  phoneNumbers: string[];
+  emails: string[];
   tags: string[];
   notes: string[];
   events: Event[];
@@ -30,6 +32,7 @@ function ContactPage({ contact, onClose }: Props) {
   const [eventText, setEventText] = useState('');
   const [tagText, setTagText] = useState('');
   const [notesText, setNotesText] = useState('');
+  const [phonesEmailsText, setPhonesEmailsText] = useState('');
   const [somethingChanged, setSomethingChanged] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [showToast, setShowToast] = useState(false);
@@ -38,6 +41,11 @@ function ContactPage({ contact, onClose }: Props) {
     if (contact) {
       const allNotes = contact.notes.join('\n');
       setNotesText(allNotes);
+
+      const phoneNumbers = contact.phoneNumbers.join('\n');
+      const emails = contact.emails.join('\n');
+      const combinedPhoneEmails = `${phoneNumbers}\n${emails}`;
+      setPhonesEmailsText(combinedPhoneEmails);
     }
   }, [contact]);
 
@@ -218,6 +226,41 @@ function ContactPage({ contact, onClose }: Props) {
       });
   };
 
+  const handleUpdatePhonesEmails = () => {
+    let encodedText;
+    if (phonesEmailsText === '') {
+      encodedText = '';
+    }
+    encodedText = encodeURIComponent(phonesEmailsText);
+    const req = {
+      method: 'PUT',
+    };
+    fetch(
+      `${BACKEND_URL}/contact/${contactState?.id}?phone_email_multiline=${encodedText}`,
+      req
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log('Success:', data);
+        setContact(data);
+        const phoneNumbers = data.phoneNumbers.join('\n');
+        const emails = data.emails.join('\n');
+        const combinedPhoneEmails = `${phoneNumbers}\n${emails}`;
+        setPhonesEmailsText(combinedPhoneEmails);
+        console.log(`Phones/emails updated to ${combinedPhoneEmails}`);
+        setSomethingChanged(true);
+        handleShowToastMessage('Success');
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  };
+
   const handleShowToastMessage = (message: string) => {
     setToastMessage(message);
     setShowToast(true);
@@ -275,9 +318,7 @@ function ContactPage({ contact, onClose }: Props) {
                       return dateA - dateB;
                     })
                     .map((event, index) => (
-                      <tr
-                        key={index}
-                      >
+                      <tr key={index}>
                         <th>{event.date}</th>
                         <td>{event.description}</td>
                         <td>
@@ -329,10 +370,10 @@ function ContactPage({ contact, onClose }: Props) {
                 Add Tag
               </button>
             </div>
-            <div className='grid grid-rows-1 grid-cols-1 m-2 col-span-2'>
+            <div className='grid grid-rows-1 grid-cols-1 m-2'>
               <textarea
                 placeholder='Notes'
-                className='textarea textarea-bordered textarea-lg w-full my-2'
+                className='textarea sm:h-30 lg:h-60 my-4 textarea-bordered textarea-lg w-full'
                 value={notesText.replace(/\n/g, '\n')}
                 onChange={(e) => setNotesText(e.target.value)}
               ></textarea>
@@ -342,15 +383,31 @@ function ContactPage({ contact, onClose }: Props) {
               >
                 Update Notes
               </button>
-              {showToast && (
-                <div className='fixed top-0 left-0 w-full flex items-center justify-center'>
-                  <div className='absolute z-50 top-2'>
-                    <Toast message={toastMessage} />
-                  </div>
-                </div>
-              )}
+            </div>
+            <div className='grid grid-rows-1 grid-cols-1 m-2 col-span-1'>
+              <textarea
+                placeholder='Emails & Numbers'
+                className='textarea textarea-bordered sm:h-30 lg:h-60 my-4 textarea-lg w-full'
+                value={phonesEmailsText.replace(/\n/g, '\n')}
+                onChange={(e) => {
+                  setPhonesEmailsText(e.target.value);
+                }}
+              ></textarea>
+              <button
+                className='btn btn-xs sm:btn-sm md:btn-md lg:btn-md'
+                onClick={handleUpdatePhonesEmails}
+              >
+                Update Numbers/Emails
+              </button>
             </div>
           </div>
+          {showToast && (
+            <div className='fixed top-0 left-0 w-full flex items-center justify-center'>
+              <div className='absolute z-50 top-2'>
+                <Toast message={toastMessage} />
+              </div>
+            </div>
+          )}
         </div>
       </div>
       <div

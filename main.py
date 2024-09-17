@@ -10,6 +10,7 @@ from handle_requests import handle_add_tag, handle_add_event
 from handle_requests import handle_update_tag, handle_update_event, handle_update_notes
 from handle_requests import handle_remove_tag, handle_remove_event
 from handle_requests import handle_delete_contact, handle_create_contact, handle_rename_contact
+from handle_requests import handle_update_phones_emails
 
 class RunMode(Enum):
     DEV = 0
@@ -80,6 +81,7 @@ def put_contact_details(id: str,
                         description: str = None,
                         rename_new_name: str = None,
                         notes: str = None,
+                        phone_email_multiline: str = None
     ):
     """
     Returns full details of updated contact
@@ -92,6 +94,8 @@ def put_contact_details(id: str,
         return handle_rename_contact(id, rename_new_name)
     elif notes != None:
         return handle_update_notes(id, notes)
+    elif phone_email_multiline != None:
+        return handle_update_phones_emails(id, phone_email_multiline)
     else:
         return {'Error': 'Please provide tag or event to update'}
 
@@ -159,6 +163,8 @@ if __name__ == "__main__":
             url=f'http://localhost:{FASTAPI_PORT}/app/',
             height=960,
             width=1280,
+            min_size=(1280, 960),  # Set the minimum size
+            resizable=True
         )
         webview.start()
         stop_event.set()  # Set stop_event after launching the window in production mode
@@ -167,4 +173,4 @@ if __name__ == "__main__":
             while True:
                 pass  # Keep the main thread running in development mode
         except KeyboardInterrupt:
-            stop_event.set()  # Set stop_event if KeyboardInterrupt occurs in development mod
+            stop_event.set()  # Set stop_event if KeyboardInterrupt occurs in development mode

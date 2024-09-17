@@ -1,10 +1,13 @@
 from event import add_event, remove_event, update_event
 from google_api import get_contact, get_contacts, get_plain_text, update_contact_plain_text
 from google_api import delete_contact, create_contact, rename_contact
+from google_api import update_contact_phones_emails
 from contact import Contact, create_contact_object
 from collections import defaultdict
 from tag import add_tag, remove_tag, update_tag
+from utils import is_email, ContactAttr
 from datetime import datetime
+
 def handle_get_contacts():
     contacts: list = get_contacts()
     contact_objects = []
@@ -142,3 +145,22 @@ def handle_delete_contact(id: str):
 def handle_rename_contact(id: str, name: str):
     renamed_contact = rename_contact(id, name)
     return create_contact_object(renamed_contact)
+def handle_update_phones_emails(id: str, phones_emails: str):
+    phones_emails_list = phones_emails.split('\n')
+    phones_list = []
+    emails_list = []
+    for item in phones_emails_list:
+        if is_email(item) == ContactAttr.EMAIL:
+            emails_list.append(item)
+        elif is_email(item) == ContactAttr.PHONE:
+            phones_list.append(item)
+    if len(phones_list) == 0:
+        phones_list = None
+    if len(emails_list) == 0:
+        emails_list = None
+    updated_contact = update_contact_phones_emails(
+        id=id,
+        phone_numbers=phones_list,
+        emails=emails_list
+    )
+    return create_contact_object(updated_contact)

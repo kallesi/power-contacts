@@ -4,6 +4,10 @@ class Event:
         self.date = date
         self.description = description
 
+    def __eq__(self, other):
+        if not isinstance(other, Event):
+            return False
+        return self.__dict__ == other.__dict__
     def __repr__(self):
         return f'[{self.date}] {self.description}'
     def __str__(self):

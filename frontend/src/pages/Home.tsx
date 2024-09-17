@@ -13,8 +13,10 @@ type Event = {
 type Contact = {
   id: string;
   name: string;
+  phoneNumbers: string[];
+  emails: string[];
   tags: string[];
-  notes: string[]
+  notes: string[];
   events: Event[];
 };
 

@@ -16,6 +16,8 @@ type Event = {
 type Contact = {
   id: string;
   name: string;
+  phoneNumbers: string[];
+  emails: string[];
   tags: string[];
   notes: string[];
   events: Event[];
@@ -34,6 +36,7 @@ function ContactPageFull() {
   const [isRenaming, setIsRenaming] = useState(false);
   const [renamedContactName, setRenamedContactName] = useState('');
   const [notesText, setNotesText] = useState('');
+  const [phonesEmailsText, setPhonesEmailsText] = useState('');
   const [toastMessage, setToastMessage] = useState('');
   const [showToast, setShowToast] = useState(false);
   const navigate = useNavigate();
@@ -43,6 +46,12 @@ function ContactPageFull() {
     if (contact) {
       const allNotes = contact.notes.join('\n');
       setNotesText(allNotes);
+
+      const phoneNumbers = contact.phoneNumbers.join('\n');
+      const emails = contact.emails.join('\n');
+      const combinedPhoneEmails = `${phoneNumbers}\n${emails}`;
+      setPhonesEmailsText(combinedPhoneEmails);
+
       setRenamedContactName(contact.name);
     }
   }, [contact]);
@@ -256,6 +265,40 @@ function ContactPageFull() {
       });
   };
 
+  const handleUpdatePhonesEmails = () => {
+    let encodedText;
+    if (phonesEmailsText === '') {
+      encodedText = '';
+    }
+    encodedText = encodeURIComponent(phonesEmailsText);
+    const req = {
+      method: 'PUT',
+    };
+    fetch(
+      `${BACKEND_URL}/contact/${contactState?.id}?phone_email_multiline=${encodedText}`,
+      req
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log('Success:', data);
+        setContact(data);
+        const phoneNumbers = data.phoneNumbers.join('\n');
+        const emails = data.emails.join('\n');
+        const combinedPhoneEmails = `${phoneNumbers}\n${emails}`;
+        setPhonesEmailsText(combinedPhoneEmails);
+        console.log(`Phones/emails updated to ${combinedPhoneEmails}`);
+        handleShowToastMessage('Success');
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  }
+
   const handleShowToastMessage = (message: string) => {
     setToastMessage(message);
     setShowToast(true);
@@ -274,7 +317,7 @@ function ContactPageFull() {
           setSearchText={() => { }}
         />
       </div>
-      <div className='px-40 py-5 mt-20 relative'>
+      <div className='lg:px-40 md:px-35 sm:px-30 px-20 py-5 mt-20 relative'>
         {isRenaming && (
           <div className='flex flex-row justify-end'>
             <input
@@ -351,9 +394,7 @@ function ContactPageFull() {
                       return dateA - dateB;
                     })
                     .map((event, index) => (
-                      <tr
-                        key={index}
-                      >
+                      <tr key={index}>
                         <th>{event.date}</th>
                         <td>{event.description}</td>
                         <td>
@@ -405,10 +446,10 @@ function ContactPageFull() {
                 Add Tag
               </button>
             </div>
-            <div className='grid grid-rows-1 grid-cols-1 m-2 col-span-2'>
+            <div className='grid grid-rows-1 grid-cols-1 m-2 col-span-1'>
               <textarea
                 placeholder='Notes'
-                className='textarea textarea-bordered textarea-lg w-full my-2'
+                className='textarea textarea-bordered sm:h-24 lg:h-44 textarea-lg w-full my-2'
                 value={notesText.replace(/\n/g, '\n')}
                 onChange={(e) => {
                   setNotesText(e.target.value);
@@ -420,14 +461,30 @@ function ContactPageFull() {
               >
                 Update Notes
               </button>
-              {showToast && (
-                <div className='fixed top-20 left-0 w-full flex items-center justify-center'>
-                  <div className='absolute z-50 top-2'>
-                    <Toast message={toastMessage} />
-                  </div>
-                </div>
-              )}
             </div>
+            <div className='grid grid-rows-1 grid-cols-1 m-2 col-span-1'>
+              <textarea
+                placeholder='Emails & Numbers'
+                className='textarea textarea-bordered sm:h-24 lg:h-44 textarea-lg w-full my-2'
+                value={phonesEmailsText.replace(/\n/g, '\n')}
+                onChange={(e) => {
+                  setPhonesEmailsText(e.target.value);
+                }}
+              ></textarea>
+              <button
+                className='btn btn-xs sm:btn-sm md:btn-md lg:btn-md'
+                onClick={handleUpdatePhonesEmails}
+              >
+                Update Numbers/Emails
+              </button>
+            </div>
+            {showToast && (
+              <div className='fixed top-20 left-0 w-full flex items-center justify-center'>
+                <div className='absolute z-50 top-2'>
+                  <Toast message={toastMessage} />
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
