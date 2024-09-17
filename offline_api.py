@@ -89,9 +89,7 @@ def update_local(id: str, **kwargs):
             break
     with open('local_contacts.pickle', mode='wb') as file:
         pickle.dump(contacts, file)
-    with open('local_contacts.pickle', mode='rb') as file:
-        updated_contacts: list[Contact] = pickle.load(file)
-    return updated_contacts
+    return update_contact
 
 def create_local(name: str):
     id = uuid.uuid4().hex
@@ -107,21 +105,19 @@ def create_local(name: str):
     contacts.append(new_contact)
     with open('local_contacts.pickle', mode='wb') as file:
         pickle.dump(contacts, file)
-    with open('local_contacts.pickle', mode='rb') as file:
-        updated_contacts: list[Contact] = pickle.load(file)
-    return updated_contacts
+    return new_contact
 
 def delete_local(id: str):
     with open('local_contacts.pickle', mode='rb') as file:
         contacts: list[Contact] = pickle.load(file)
     for contact in contacts:
         if contact.id == id:
+            deleted_contact = contact
             contacts.remove(contact)
             break
-
     with open('local_contacts.pickle', mode='wb') as file:
         pickle.dump(contacts, file)
-    with open('local_contacts.pickle', mode='rb') as file:
-        updated_contacts: list[Contact] = pickle.load(file)
-    return updated_contacts
+    return deleted_contact
 
+if __name__ == '__main__':
+    pass
