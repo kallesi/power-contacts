@@ -1,8 +1,6 @@
 import pickle
 import uuid
-from utils import split_name
 from contact import Contact, create_contact_object
-from handle_requests import handle_get_contacts
 from google_api import get_contacts, batch_create_contacts, batch_update_contacts, batch_delete_contacts
 
 # Syncing
@@ -52,7 +50,7 @@ def merge_local_to_remote():
 
     return contact_objects_created, contact_objects_updated
 
-def merge_contacts_from_remote():
+def merge_remote_to_local():
     gc_objects: list[Contact] = get_contacts()
     contacts = []
     for contact in gc_objects:
@@ -76,7 +74,13 @@ def get_local(id: str):
                 break
     return selected_contact
 
-def update_local(id: str, update_contact: Contact):
+def update_local(id: str, **kwargs):
+    update_contact = get_local(id)
+
+    for prop, value in kwargs.items():
+        if hasattr(update_contact, prop):
+            setattr(update_contact, prop, value)
+
     with open('local_contacts.pickle', mode='rb') as file:
         contacts: list[Contact] = pickle.load(file)
     for i, contact in enumerate(contacts):
@@ -121,5 +125,3 @@ def delete_local(id: str):
         updated_contacts: list[Contact] = pickle.load(file)
     return updated_contacts
 
-if __name__ =="__main__":
-    pass
