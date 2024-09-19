@@ -3,14 +3,14 @@ from google_api import get_contact, get_contacts, get_plain_text, update_contact
 from google_api import delete_contact, create_contact, rename_contact
 from google_api import update_contact_phones_emails
 from offline_api import get_local_all, get_local, update_local, delete_local, create_local
-from offline_api import merge_local_to_remote, merge_remote_to_local
+from offline_api import merge_local_to_remote, merge_remote_to_local, get_sync_differences
 from contact import Contact, create_contact_object
 from collections import defaultdict
 from tag import add_tag, remove_tag, update_tag
 from utils import is_email, ContactAttr
 from datetime import datetime
 
-online = True
+online = False
 
 def handle_get_contacts():
     if online:
@@ -197,9 +197,8 @@ def handle_update_notes(id: str, notes: str):
         new_contact = update_contact_plain_text(id, plain_text)
         return create_contact_object(new_contact)
     else:
-        contact = get_local(id)
-        contact.notes = notes.split('\n')
-        new_contact = update_local(id, notes=notes)
+        note_strings = notes.split('\n')
+        new_contact = update_local(id, notes=note_strings)
         return new_contact
 
 def handle_create_contact(name: str):
@@ -245,3 +244,32 @@ def handle_update_phones_emails(id: str, phones_emails: str):
         return create_contact_object(updated_contact)
     else:
         return update_local(id, phone_numbers=phones_list, emails=emails_list)
+
+# Handle Syncing
+
+def handle_get_sync_differences():
+    local_excess, remote_excess, updated = get_sync_differences()
+    return {
+        'localExcessContacts': local_excess,
+        'remoteExcessContacts': remote_excess,
+        'updatedContacts': updated
+    }
+
+def handle_merge_to_local():
+    merge_remote_to_local()
+    local_excess, remote_excess, updated = get_sync_differences()
+    return {
+        'localExcessContacts': local_excess,
+        'remoteExcessContacts': remote_excess,
+        'updatedContacts': updated
+    }
+
+
+def handle_merge_to_remote():
+    merge_local_to_remote()
+    local_excess, remote_excess, updated = get_sync_differences()
+    return {
+        'localExcessContacts': local_excess,
+        'remoteExcessContacts': remote_excess,
+        'updatedContacts': updated
+    }

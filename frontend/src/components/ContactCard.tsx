@@ -4,6 +4,7 @@ type ContactCardProps = {
   name: string;
   tags: string[];
   onClick: () => void;
+
 };
 
 type ContactCardSimpleProps = {

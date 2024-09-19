@@ -11,6 +11,7 @@ from handle_requests import handle_update_tag, handle_update_event, handle_updat
 from handle_requests import handle_remove_tag, handle_remove_event
 from handle_requests import handle_delete_contact, handle_create_contact, handle_rename_contact
 from handle_requests import handle_update_phones_emails
+from handle_requests import handle_get_sync_differences, handle_merge_to_local, handle_merge_to_remote
 
 class RunMode(Enum):
     DEV = 0
@@ -144,8 +145,27 @@ def get_tag(tag: str):
     """
     return handle_get_tag(tag)
 
+# Handle Synchronisation
+
+@app.get("/sync")
+def get_sync_differences():
+    return handle_get_sync_differences()
+
+@app.put("/sync/pull")
+def sync_pull():
+    return handle_merge_to_local()
+
+@app.put("/sync/push")
+def sync_push():
+    changes = handle_merge_to_remote()
+    handle_merge_to_local()
+    return changes
+
+
 
 stop_event = Event()
+
+
 def run_fastapi_server():
     while not stop_event.is_set():
         uvicorn.run(app, host="127.0.0.1", port=FASTAPI_PORT)

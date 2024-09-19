@@ -231,11 +231,20 @@ def batch_delete_contacts(contacts: list[Contact]):
     body = {
         "resourceNames": resource_name_list
     }
-    service.people().batchDeleteContacts(
+    response = service.people().batchDeleteContacts(
         body=body
     ).execute()
-    return contacts
+    if response == {}:
+        return contacts
 
 
 if __name__ == "__main__":
-    pass
+    aaron1 = Contact('', 'AAron 1', [], [], '')
+    aaron2 = Contact('', 'AAron 2', [], [], '')
+    aaron3 = Contact('', 'AAron 3', [], [], '')
+
+
+    a = batch_create_contacts([aaron1, aaron2, aaron3])
+
+    print('done')
+

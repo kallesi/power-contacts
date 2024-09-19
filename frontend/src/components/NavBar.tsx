@@ -2,6 +2,14 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect, useCallback } from 'react';
 import { BACKEND_URL } from '../constants';
 import favicon from '../assets/favicon.png';
+import SyncPage from '../components/SyncPage'
+
+import { IoSyncSharp } from "react-icons/io5";
+import { LiaTagSolid } from "react-icons/lia";
+import { MdEventAvailable } from "react-icons/md";
+import { IoIosAddCircleOutline } from 'react-icons/io';
+import { LuSendHorizonal } from 'react-icons/lu';
+
 
 type NavBarProps = {
   searchText: string;
@@ -12,14 +20,17 @@ type NavBarProps = {
 function NavBar({ searchText, setSearchText, showSearch = true }: NavBarProps) {
   const [newContact, setNewContact] = useState('');
   const [isAddingContact, setIsAddingContact] = useState(false);
+  const [syncIsOpen, setSyncIsOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
   const navigateOrRefresh = useCallback(
     (path: string) => {
       if (location.pathname === path) {
-        navigate('/app/');
-        navigate(path);
+        navigate('/');
+        setTimeout(() => {
+          navigate(path);
+        }, 1);
       } else {
         navigate(path);
       }
@@ -65,6 +76,15 @@ function NavBar({ searchText, setSearchText, showSearch = true }: NavBarProps) {
       document.removeEventListener('keydown', handleShortcut);
     };
   }, [navigateOrRefresh]);
+
+  const handleOpenSyncPage = () => {
+    setSyncIsOpen(true);
+  }
+
+  const handleCloseSyncPage = () => {
+    setSyncIsOpen(false);
+    window.location.reload();
+  }
 
   const handleAddContact = () => {
     setIsAddingContact((prevIsAddingContact) => !prevIsAddingContact);
@@ -115,19 +135,25 @@ function NavBar({ searchText, setSearchText, showSearch = true }: NavBarProps) {
           onClick={() => navigateOrRefresh('/app/tags/')}
           className='btn btn-ghost text-lg font-normal text-white'
         >
-          Tags
+          <LiaTagSolid size={30} />
         </button>
         <button
           onClick={() => navigateOrRefresh('/app/events/')}
           className='btn btn-ghost text-lg font-normal text-white'
         >
-          Events
+          <MdEventAvailable size={26} />
+        </button>
+        <button
+          onClick={handleOpenSyncPage}
+          className='btn btn-ghost text-lg font-normal text-white'
+        >
+          <IoSyncSharp size={25} />
         </button>
         <button
           onClick={handleAddContact}
-          className='btn btn-ghost text-lg font-normal text-white'
+          className={`btn text-lg font-normal text-white ${isAddingContact ? 'btn-neutral' : 'btn-ghost'}`}
         >
-          Add Contact
+          <IoIosAddCircleOutline size={26} />
         </button>
         {isAddingContact && (
           <div>
@@ -140,9 +166,9 @@ function NavBar({ searchText, setSearchText, showSearch = true }: NavBarProps) {
             />
             <button
               onClick={handleSubmitContact}
-              className='btn btn-primary'
+              className='btn btn-primary btn-outline'
             >
-              Submit
+              <LuSendHorizonal />
             </button>
           </div>
         )}
@@ -159,6 +185,10 @@ function NavBar({ searchText, setSearchText, showSearch = true }: NavBarProps) {
           />
         </div>
       )}
+      {syncIsOpen && (
+        <SyncPage onClose={handleCloseSyncPage} />
+      )}
+
     </div>
   );
 }

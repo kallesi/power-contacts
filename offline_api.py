@@ -23,7 +23,7 @@ def get_sync_differences():
         else:
             remote_contact = remote_dict[local_id]
             if remote_contact != local_contact:
-                differing_contacts.append((local_contact, remote_contact))
+                differing_contacts.append(local_contact)
 
     # Determine remote excess contacts
     for remote_id, remote_contact in remote_dict.items():
@@ -35,20 +35,27 @@ def get_sync_differences():
 def merge_local_to_remote():
     local_excess_contacts, remote_excess_contacts, differing_contacts = get_sync_differences()
 
-    # For data safety we won't actually implement bulk deleting of contacts
+
     contact_objects_created = []
-    contacts_created = batch_create_contacts(local_excess_contacts)
-    for contact_created in contacts_created['createdPeople']:
-        contact_objects_created.append(create_contact_object(contact_created['person']))
+    if len(local_excess_contacts) > 0:
+        contacts_created = batch_create_contacts(local_excess_contacts)
+        for contact in contacts_created:
+            contact_objects_created.append(contact)
 
     contact_objects_updated = []
     # First get the local one of the tuple (local, remote) in differing_contacts
-    differing_contacts_local_version = [contact[0] for contact in differing_contacts]
-    contacts_updated = batch_update_contacts(differing_contacts_local_version)
-    for contact_updated in contacts_updated:
-        contact_objects_updated.append(create_contact_object(contact_updated))
+    if len(differing_contacts) > 0:
+        contacts_updated = batch_update_contacts(differing_contacts)
+        for contact_updated in contacts_updated:
+            contact_objects_updated.append(contact_updated)
 
-    return contact_objects_created, contact_objects_updated
+    contact_objects_deleted = []
+    if len(remote_excess_contacts) > 0:
+        contacts_deleted = batch_delete_contacts(remote_excess_contacts)
+        for contact_deleted in contacts_deleted:
+            contact_objects_deleted.append(contact_deleted)
+
+    return contact_objects_created, contact_objects_updated, contact_objects_deleted
 
 def merge_remote_to_local():
     gc_objects: list[Contact] = get_contacts()

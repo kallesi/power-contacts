@@ -329,7 +329,7 @@ function ContactPageFull() {
             />
             <button
               onClick={handleRenameContact}
-              className='btn btn-outline p-2 m-2'
+              className='btn btn-primary btn-outline p-2 m-2'
             >
               Submit
             </button>
