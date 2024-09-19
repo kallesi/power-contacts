@@ -168,13 +168,14 @@ function SyncPage({ onClose }: SyncPageProps) {
             ><FiUpload />
             </button>
           </div>
+
           <div className='collapse collapse-open bg-base-200 my-4'>
             <input type='checkbox' />
             <div className='collapse-title text-xl font-medium'>
               New Local Contacts:
             </div>
             <div className='collapse-content'>
-              <div className='grid grid-cols-4'>
+              <div className='grid grid-cols-3'>
                 {syncResults?.localExcessContacts.map(contact => (
                   <ContactCardSimple
                     name={contact.name}
@@ -192,7 +193,7 @@ function SyncPage({ onClose }: SyncPageProps) {
               Local Deleted Contacts:
             </div>
             <div className='collapse-content'>
-              <div className='grid grid-cols-4'>
+              <div className='grid grid-cols-3'>
                 {syncResults?.remoteExcessContacts.map(contact => (
                   <ContactCardSimple
                     name={contact.name}
@@ -210,7 +211,7 @@ function SyncPage({ onClose }: SyncPageProps) {
               Updated Contacts:
             </div>
             <div className='collapse-content'>
-              <div className='grid grid-cols-4'>
+              <div className='grid grid-cols-3'>
                 {syncResults?.updatedContacts.map(contact => (
                   <ContactCardSimple
                     name={contact.name}
