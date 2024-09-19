@@ -18,7 +18,8 @@ function NavBar({ searchText, setSearchText, showSearch = true }: NavBarProps) {
   const navigateOrRefresh = useCallback(
     (path: string) => {
       if (location.pathname === path) {
-        window.location.reload();
+        navigate('/app/');
+        navigate(path);
       } else {
         navigate(path);
       }

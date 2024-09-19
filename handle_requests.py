@@ -10,7 +10,7 @@ from tag import add_tag, remove_tag, update_tag
 from utils import is_email, ContactAttr
 from datetime import datetime
 
-online = False
+online = True
 
 def handle_get_contacts():
     if online:
