@@ -1,5 +1,7 @@
+from os.path import abspath
 import pickle
 import uuid
+import json
 from contact import Contact, create_contact_object
 from google_api import get_contacts, batch_create_contacts, batch_update_contacts, batch_delete_contacts
 
@@ -34,8 +36,6 @@ def get_sync_differences():
 
 def merge_local_to_remote():
     local_excess_contacts, remote_excess_contacts, differing_contacts = get_sync_differences()
-
-
     contact_objects_created = []
     if len(local_excess_contacts) > 0:
         contacts_created = batch_create_contacts(local_excess_contacts)
@@ -57,19 +57,39 @@ def merge_local_to_remote():
 
     return contact_objects_created, contact_objects_updated, contact_objects_deleted
 
+# Get data to local - from Google or from Json file
+
+def merge_contacts_to_local(contacts: list[Contact]):
+    with open('local_contacts.pickle', mode='wb') as file:
+        pickle.dump(contacts, file)
+    return contacts
+def import_json_dict_to_local(data: dict):
+    contacts = []
+    for contact_id, attributes in data.items():
+        contact = Contact(
+            id=contact_id,
+            names=attributes['name'],
+            phone_numbers=attributes['phoneNumbers'],
+            emails=attributes['emails'],
+            text="\n".join(attributes['notes'] +
+                [f":{event['date']} {event['description']}" for event in attributes['events']] +
+                [f"#{tag}" for tag in attributes['tags']])
+        )
+        contacts.append(contact)
+    return merge_contacts_to_local(contacts)
+
 def merge_remote_to_local():
     gc_objects: list[Contact] = get_contacts()
     contacts = []
     for contact in gc_objects:
         contacts.append(create_contact_object(contact))
-    with open('local_contacts.pickle', mode='wb') as file:
-        pickle.dump(contacts, file)
-    return contacts
+    return merge_contacts_to_local(contacts)
 
 # CRUD Operations
 def get_local_all():
     with open('local_contacts.pickle', mode='rb') as file:
         contacts: list[Contact] = pickle.load(file)
+    contacts = sorted(contacts)
     return contacts
 def get_local(id: str):
     with open('local_contacts.pickle', mode='rb') as file:
@@ -105,7 +125,7 @@ def create_local(name: str):
         names=name,
         phone_numbers=[],
         emails=[],
-        text='locally created'
+        text=''
     )
     with open('local_contacts.pickle', mode='rb') as file:
         contacts: list[Contact] = pickle.load(file)
@@ -126,5 +146,27 @@ def delete_local(id: str):
         pickle.dump(contacts, file)
     return deleted_contact
 
+
+def export_local_all():
+    with open('local_contacts.pickle', mode='rb') as file:
+        contacts = pickle.load(file)
+    data = {
+        contact.id: {
+            'name': contact.name,
+            'phoneNumbers': contact.phoneNumbers,
+            'emails': contact.emails,
+            'tags': contact.tags,
+            'events': [{'date': event.date, 'description': event.description} for event in contact.events],
+            'notes': contact.notes
+        }
+        for contact in contacts
+    }
+    with open('file.json', 'w') as json_file:
+        json.dump(data, json_file, indent=4)
+    return abspath('file.json')
+
+
+
+
 if __name__ == '__main__':
-    pass
+    export_local_all()

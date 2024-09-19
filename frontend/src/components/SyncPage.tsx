@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { ContactCardSimple } from './ContactCard';
 import Toast from './Toast';
-import { FiUpload, FiDownload } from "react-icons/fi";
-import { IoSyncSharp } from "react-icons/io5";
+import { FiUpload, FiDownload } from 'react-icons/fi';
+import { IoSyncSharp } from 'react-icons/io5';
 import { BACKEND_URL } from '../constants';
+import { ExportButton, ImportButton } from './ImportExport';
 
 type SyncPageProps = {
   onClose: () => void;
@@ -20,10 +21,10 @@ type Contact = {
 };
 
 type SyncResults = {
-  localExcessContacts: Contact[],
-  remoteExcessContacts: Contact[],
-  updatedContacts: Contact[]
-}
+  localExcessContacts: Contact[];
+  remoteExcessContacts: Contact[];
+  updatedContacts: Contact[];
+};
 
 function SyncPage({ onClose }: SyncPageProps) {
   const [isLoading, setIsLoading] = useState(false);
@@ -47,81 +48,79 @@ function SyncPage({ onClose }: SyncPageProps) {
 
   useEffect(() => {
     handleCheckSyncDifference();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, []);
 
   const handleCheckSyncDifference = () => {
     const req = {
       method: 'GET',
     };
-    setIsLoading(true)
+    setIsLoading(true);
     fetch(`${BACKEND_URL}/sync`, req)
       .then((response) => {
         if (!response.ok) {
-          setIsLoading(false)
+          setIsLoading(false);
           throw new Error('Network response was not ok');
         }
         return response.json();
       })
       .then((data) => {
         console.log('Success:', data);
-        setSyncResults(data)
-        setIsLoading(false)
-        handleShowToastMessage('Success');
+        setSyncResults(data);
+        setIsLoading(false);
       })
       .catch((error) => {
         console.error('Error:', error);
         setIsLoading(false);
       });
-  }
+  };
 
   const handlePullToLocal = () => {
     const req = {
       method: 'PUT',
     };
-    setIsLoading(true)
+    setIsLoading(true);
     fetch(`${BACKEND_URL}/sync/pull`, req)
       .then((response) => {
         if (!response.ok) {
-          setIsLoading(false)
+          setIsLoading(false);
           throw new Error('Network response was not ok');
         }
         return response.json();
       })
       .then((data) => {
         console.log('Success:', data);
-        setSyncResults(data)
-        setIsLoading(false)
+        setSyncResults(data);
+        setIsLoading(false);
         handleShowToastMessage('Success');
       })
       .catch((error) => {
         console.error('Error:', error);
       });
-  }
+  };
 
   const handlePushToRemote = () => {
     const req = {
       method: 'PUT',
     };
-    setIsLoading(true)
+    setIsLoading(true);
     fetch(`${BACKEND_URL}/sync/push`, req)
       .then((response) => {
         if (!response.ok) {
-          setIsLoading(false)
+          setIsLoading(false);
           throw new Error('Network response was not ok');
         }
         return response.json();
       })
       .then((data) => {
         console.log('Success:', data);
-        setSyncResults(data)
-        setIsLoading(false)
+        setSyncResults(data);
+        setIsLoading(false);
         handleShowToastMessage('Success');
       })
       .catch((error) => {
         console.error('Error:', error);
       });
-  }
+  };
 
   const handleShowToastMessage = (message: string) => {
     setToastMessage(message);
@@ -138,37 +137,41 @@ function SyncPage({ onClose }: SyncPageProps) {
       onClick={onClose}
     >
       <div
-        className='mt-8 p-5 card bg-base-100 shadow-md z-50 w-3/5 h-5/6 overflow-y-scroll shadow-slate-950'
+        className='mt-8 p-5 card bg-base-100 shadow-md z-50 w-3/5 h-5/6 flex flex-col'
         onClick={(e) => e.stopPropagation()}
       >
-        <div className='grid grid-rows-1 grid-cols-1'>
-
-          <div className='grid grid-rows-1 grid-cols-4 gap-5'>
-            <div className='flex'>
-              <h2 className='flex text-xl font-bold items-center min-h-14 ml-4'>Sync</h2>
-              <div>
-                {isLoading && (
-                  <span className="loading loading-spinner loading-lg ml-4"></span>
-                )}
-              </div>
-            </div>
-            <button // Check Sync Differences
+        <div className='flex-none'>
+          <div className='flex'>
+            <h2 className='flex text-xl font-bold items-center min-h-14 ml-4'>
+              Sync
+            </h2>
+            {isLoading && (
+              <span className='loading loading-spinner loading-lg ml-4'></span>
+            )}
+          </div>
+          <div className='grid grid-cols-3 gap-5 mt-4'>
+            <button
               onClick={handleCheckSyncDifference}
               className='btn btn-outline btn-primary text-lg font-normal text-white'
-            ><IoSyncSharp />
+            >
+              <IoSyncSharp />
             </button>
-            <button // Pull to local
+            <button
               onClick={handlePullToLocal}
               className='btn btn-outline btn-success text-lg font-normal text-white'
-            ><FiDownload />
+            >
+              <FiDownload />
             </button>
-            <button // Push to remote
+            <button
               onClick={handlePushToRemote}
               className='btn btn-outline btn-warning text-lg font-normal text-white'
-            ><FiUpload />
+            >
+              <FiUpload />
             </button>
           </div>
+        </div>
 
+        <div className='flex-grow overflow-y-auto mt-4'>
           <div className='collapse collapse-open bg-base-200 my-4'>
             <input type='checkbox' />
             <div className='collapse-title text-xl font-medium'>
@@ -176,13 +179,13 @@ function SyncPage({ onClose }: SyncPageProps) {
             </div>
             <div className='collapse-content'>
               <div className='grid grid-cols-3'>
-                {syncResults?.localExcessContacts.map(contact => (
+                {syncResults?.localExcessContacts.map((contact) => (
                   <ContactCardSimple
+                    key={contact.id}
                     name={contact.name}
                     onClick={() => { }}
                   />
-                ))
-                }
+                ))}
               </div>
             </div>
           </div>
@@ -194,13 +197,13 @@ function SyncPage({ onClose }: SyncPageProps) {
             </div>
             <div className='collapse-content'>
               <div className='grid grid-cols-3'>
-                {syncResults?.remoteExcessContacts.map(contact => (
+                {syncResults?.remoteExcessContacts.map((contact) => (
                   <ContactCardSimple
+                    key={contact.id}
                     name={contact.name}
                     onClick={() => { }}
                   />
-                ))
-                }
+                ))}
               </div>
             </div>
           </div>
@@ -212,26 +215,39 @@ function SyncPage({ onClose }: SyncPageProps) {
             </div>
             <div className='collapse-content'>
               <div className='grid grid-cols-3'>
-                {syncResults?.updatedContacts.map(contact => (
+                {syncResults?.updatedContacts.map((contact) => (
                   <ContactCardSimple
+                    key={contact.id}
                     name={contact.name}
                     onClick={() => { }}
                   />
-                ))
-                }
+                ))}
               </div>
             </div>
           </div>
-
-
-          {showToast && (
-            <div className='fixed top-0 left-0 w-full flex items-center justify-center'>
-              <div className='absolute z-50 top-2'>
-                <Toast message={toastMessage} />
-              </div>
-            </div>
-          )}
         </div>
+
+        <div className='flex-none mt-4'>
+          <div className='grid grid-cols-2 gap-4 mx-2'>
+            <ImportButton
+              handleUpdate={handleCheckSyncDifference}
+              className='btn-info btn-outline font-bold text-base'
+            >
+              Import
+            </ImportButton>
+            <ExportButton className='btn-error btn-outline font-bold text-base'>
+              Export
+            </ExportButton>
+          </div>
+        </div>
+
+        {showToast && (
+          <div className='fixed top-0 left-0 w-full flex items-center justify-center'>
+            <div className='absolute z-50 top-2'>
+              <Toast message={toastMessage} />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -6,6 +6,8 @@ import useFetch from '../hooks/useFetch';
 import { useNavigate, useParams } from 'react-router-dom';
 import NavBar from '../components/NavBar';
 import { MdDelete, MdDriveFileRenameOutline } from 'react-icons/md';
+import { IoAddOutline } from 'react-icons/io5';
+import { MdUpdate } from 'react-icons/md';
 import Toast from '../components/Toast';
 
 type Event = {
@@ -297,7 +299,7 @@ function ContactPageFull() {
       .catch((error) => {
         console.error('Error:', error);
       });
-  }
+  };
 
   const handleShowToastMessage = (message: string) => {
     setToastMessage(message);
@@ -412,81 +414,92 @@ function ContactPageFull() {
             </div>
           </div>
         )}
+        <div className="divider"></div>
         <div className='overflow-x-auto h-full relative'>
-          <div className='grid grid-cols-2 grid-rows-2'>
-            <div className='grid grid-rows-3 grid-cols-1 m-2'>
+          <div className='grid grid-cols-2 gap-3'> {/*Main 4-element grid*/}
+            <div className='grid grid-rows-2 grid-cols-3 gap-4 m-2 items-center justify-between'> {/*Events*/}
+              <h1 className='flex flex-row font-bold items-center'>
+                Add Event
+              </h1>
               <Picker onDateChange={handleDateChange} />
+
+              <button
+                className='btn btn-xs btn-primary btn-outline sm:btn-sm md:btn-md lg:btn-md'
+                onClick={handleSubmitEvent}
+              >
+                <IoAddOutline size={20} />
+              </button>
               <input
                 type='text'
-                placeholder='Type here'
-                className='input input-bordered w-auto'
+                placeholder='Event description'
+                className='input input-bordered col-span-3'
                 value={eventText}
                 onChange={(e) => setEventText(e.target.value)}
               />
-              <button
-                className='btn btn-xs sm:btn-sm md:btn-md lg:btn-md'
-                onClick={handleSubmitEvent}
-              >
-                Add Event
-              </button>
             </div>
-            <div className='grid grid-rows-3 grid-cols-1 m-2'>
+            <div className='grid grid-rows-2 grid-cols-3 gap-4 m-2 items-center justify-between'> {/*Tags*/}
+              <h1 className='flex flex-row font-bold items-center col-span-2'>
+                Add Tag
+              </h1>
+
+              <button
+                className='btn btn-xs btn-primary btn-outline sm:btn-sm md:btn-md lg:btn-md'
+                onClick={handleAddTag}
+              >
+                <IoAddOutline size={20} />
+              </button>
               <input
                 type='text'
                 placeholder='Type here'
-                className='input input-bordered w-auto'
+                className='input input-bordered w-auto col-span-3'
                 value={tagText}
                 onChange={(e) => setTagText(e.target.value)}
               />
-              <div></div>
-              <button
-                className='btn btn-xs sm:btn-sm md:btn-md lg:btn-md'
-                onClick={handleAddTag}
-              >
-                Add Tag
-              </button>
             </div>
-            <div className='grid grid-rows-1 grid-cols-1 m-2 col-span-1'>
-              <textarea
-                placeholder='Notes'
-                className='textarea textarea-bordered sm:h-24 lg:h-44 textarea-lg w-full my-2'
-                value={notesText.replace(/\n/g, '\n')}
-                onChange={(e) => {
-                  setNotesText(e.target.value);
-                }}
-              ></textarea>
+            <div className="divider col-span-2"></div>
+            <div className='grid grid-rows-5 grid-cols-3 gap-4 m-2 items-center justify-between'> {/*Phones/emails*/}
+              <h1 className='font-bold col-span-2'>Numbers/Emails</h1>
               <button
-                className='btn btn-xs sm:btn-sm md:btn-md lg:btn-md'
-                onClick={handleUpdateNotes}
+                className='btn btn-xs btn-primary btn-outline sm:btn-sm md:btn-md lg:btn-md'
+                onClick={handleUpdatePhonesEmails}
               >
-                Update Notes
+                <MdUpdate size={20} />
               </button>
-            </div>
-            <div className='grid grid-rows-1 grid-cols-1 m-2 col-span-1'>
+
               <textarea
                 placeholder='Emails & Numbers'
-                className='textarea textarea-bordered sm:h-24 lg:h-44 textarea-lg w-full my-2'
+                className='textarea textarea-bordered sm:h-30 lg:h-60 textarea-lg w-full col-span-3 row-span-4'
                 value={phonesEmailsText.replace(/\n/g, '\n')}
                 onChange={(e) => {
                   setPhonesEmailsText(e.target.value);
                 }}
               ></textarea>
-              <button
-                className='btn btn-xs sm:btn-sm md:btn-md lg:btn-md'
-                onClick={handleUpdatePhonesEmails}
-              >
-                Update Numbers/Emails
-              </button>
             </div>
-            {showToast && (
-              <div className='fixed top-20 left-0 w-full flex items-center justify-center'>
-                <div className='absolute z-50 top-2'>
-                  <Toast message={toastMessage} />
-                </div>
-              </div>
-            )}
+            <div className='grid grid-rows-5 grid-cols-3 gap-4 m-2 items-center justify-between'> {/*Notes*/}
+              <h1 className='font-bold col-span-2'>Notes</h1>
+              <button
+                className='btn btn-primary btn-outline btn-xs sm:btn-sm md:btn-md lg:btn-md'
+                onClick={handleUpdateNotes}
+              >
+                <MdUpdate size={20} />
+              </button>
+              <textarea
+                placeholder='Notes'
+                className='textarea sm:h-30 lg:h-60 textarea-bordered textarea-lg w-full col-span-3 row-span-4'
+                value={notesText.replace(/\n/g, '\n')}
+                onChange={(e) => setNotesText(e.target.value)}
+              ></textarea>
+            </div>
+
           </div>
         </div>
+        {showToast && (
+          <div className='fixed top-20 left-0 w-full flex items-center justify-center'>
+            <div className='absolute z-50 top-2'>
+              <Toast message={toastMessage} />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

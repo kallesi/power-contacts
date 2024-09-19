@@ -1,6 +1,8 @@
 from threading import Thread, Event
 from enum import Enum
-from fastapi import FastAPI
+import json
+from fastapi import FastAPI, UploadFile, File
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
@@ -12,6 +14,8 @@ from handle_requests import handle_remove_tag, handle_remove_event
 from handle_requests import handle_delete_contact, handle_create_contact, handle_rename_contact
 from handle_requests import handle_update_phones_emails
 from handle_requests import handle_get_sync_differences, handle_merge_to_local, handle_merge_to_remote
+from handle_requests import handle_import, handle_export
+
 
 class RunMode(Enum):
     DEV = 0
@@ -161,6 +165,17 @@ def sync_push():
     handle_merge_to_local()
     return changes
 
+# Import export
+@app.post("/upload")
+async def upload_contacts(file: UploadFile = File(...)):
+    contents = await file.read()
+    data = json.loads(contents)
+    contacts = handle_import(data)
+    return contacts
+@app.get("/download")
+async def download_contacts():
+    file_path = handle_export()
+    return FileResponse(file_path, media_type='application/json', filename='contacts.json')
 
 
 stop_event = Event()

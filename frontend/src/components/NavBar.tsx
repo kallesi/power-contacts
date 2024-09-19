@@ -2,14 +2,13 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect, useCallback } from 'react';
 import { BACKEND_URL } from '../constants';
 import favicon from '../assets/favicon.png';
-import SyncPage from '../components/SyncPage'
+import SyncPage from '../components/SyncPage';
 
-import { IoSyncSharp } from "react-icons/io5";
-import { LiaTagSolid } from "react-icons/lia";
-import { MdEventAvailable } from "react-icons/md";
+import { IoSyncSharp } from 'react-icons/io5';
+import { LiaTagSolid } from 'react-icons/lia';
+import { MdEventAvailable } from 'react-icons/md';
 import { IoIosAddCircleOutline } from 'react-icons/io';
 import { LuSendHorizonal } from 'react-icons/lu';
-
 
 type NavBarProps = {
   searchText: string;
@@ -81,9 +80,15 @@ function NavBar({ searchText, setSearchText, showSearch = true }: NavBarProps) {
     };
   }, [navigateOrRefresh]);
 
+  useEffect(() => {
+    if (isAddingContact) {
+      document.getElementById('addContactInputBox')?.focus();
+    }
+  }, [isAddingContact]);
+
   const handleOpenSyncPage = () => {
     setSyncIsOpen(true);
-  }
+  };
 
   const handleCloseSyncPage = () => {
     setSyncIsOpen(false);
@@ -92,7 +97,7 @@ function NavBar({ searchText, setSearchText, showSearch = true }: NavBarProps) {
     setTimeout(() => {
       navigate(originalPath);
     }, 1);
-  }
+  };
 
   const handleAddContact = () => {
     setIsAddingContact((prevIsAddingContact) => !prevIsAddingContact);
@@ -115,6 +120,11 @@ function NavBar({ searchText, setSearchText, showSearch = true }: NavBarProps) {
         console.log('Success:', data);
         setIsAddingContact(false);
         setNewContact('');
+        const currentPath = location.pathname;
+        navigate('/');
+        setTimeout(() => {
+          navigate(currentPath);
+        }, 1);
       })
       .catch((error) => {
         console.error('Error:', error);
@@ -141,25 +151,33 @@ function NavBar({ searchText, setSearchText, showSearch = true }: NavBarProps) {
         </button>
         <button
           onClick={() => navigateOrRefresh('/app/tags/')}
-          className={`btn text-lg font-normal text-white ${(location.pathname == '/app/tags/' && !syncIsOpen) ? 'btn-neutral' : 'btn-ghost'}`}
+          className={`btn text-lg font-normal text-white ${location.pathname == '/app/tags/' && !syncIsOpen
+            ? 'btn-neutral'
+            : 'btn-ghost'
+            }`}
         >
           <LiaTagSolid size={30} />
         </button>
         <button
           onClick={() => navigateOrRefresh('/app/events/')}
-          className={`btn text-lg font-normal text-white ${(location.pathname == '/app/events/' && !syncIsOpen) ? 'btn-neutral' : 'btn-ghost'}`}
+          className={`btn text-lg font-normal text-white ${location.pathname == '/app/events/' && !syncIsOpen
+            ? 'btn-neutral'
+            : 'btn-ghost'
+            }`}
         >
           <MdEventAvailable size={26} />
         </button>
         <button
           onClick={handleOpenSyncPage}
-          className={`btn text-lg font-normal text-white ${syncIsOpen ? 'btn-neutral' : 'btn-ghost'}`}
+          className={`btn text-lg font-normal text-white ${syncIsOpen ? 'btn-neutral' : 'btn-ghost'
+            }`}
         >
           <IoSyncSharp size={25} />
         </button>
         <button
           onClick={handleAddContact}
-          className={`btn text-lg font-normal text-white ${isAddingContact ? 'btn-neutral' : 'btn-ghost'}`}
+          className={`btn text-lg font-normal text-white ${isAddingContact ? 'btn-neutral' : 'btn-ghost'
+            }`}
         >
           <IoIosAddCircleOutline size={26} />
         </button>
@@ -167,6 +185,7 @@ function NavBar({ searchText, setSearchText, showSearch = true }: NavBarProps) {
           <div>
             <input
               type='text'
+              id='addContactInputBox'
               placeholder='New Contact Name'
               className='input input-bordered w-24 md:w-auto mx-2'
               value={newContact}
@@ -193,10 +212,7 @@ function NavBar({ searchText, setSearchText, showSearch = true }: NavBarProps) {
           />
         </div>
       )}
-      {syncIsOpen && (
-        <SyncPage onClose={handleCloseSyncPage} />
-      )}
-
+      {syncIsOpen && <SyncPage onClose={handleCloseSyncPage} />}
     </div>
   );
 }

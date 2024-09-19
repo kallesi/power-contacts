@@ -112,7 +112,7 @@ export default function Picker({ onDateChange }: PickerProps) {
     <div className='antialiased sans-serif h-auto'>
       <div>
         <div className='container'>
-          <div className='mb-5 w-full'>
+          <div className='w-full'>
             <div className='relative'>
               <input
                 type='hidden'
@@ -123,7 +123,7 @@ export default function Picker({ onDateChange }: PickerProps) {
                 readOnly
                 className='input input-bordered cursor-pointer w-full leading-none'
                 placeholder='Select date'
-                value={format(selectedDate, 'yyyy-MM-dd')}
+                value={format(selectedDate, 'd MMM yy')}
                 onClick={toggleDatepicker}
               />
               {showDatepicker && (
