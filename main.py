@@ -199,6 +199,7 @@ if __name__ == "__main__":
             min_size=(1280, 960),  # Set the minimum size
             resizable=True
         )
+        webview.settings['ALLOW_DOWNLOADS'] = True
         webview.start()
         stop_event.set()  # Set stop_event after launching the window in production mode
     else:
