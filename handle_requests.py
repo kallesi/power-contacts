@@ -1,14 +1,11 @@
-from event import add_event, remove_event, update_event, Event
-from google_api import get_contact, get_contacts, get_plain_text, update_contact_plain_text
-from google_api import delete_contact, create_contact, rename_contact
-from google_api import update_contact_phones_emails
+from event import Event
 from offline_api import get_local_all, get_local, update_local, delete_local, create_local
 from offline_api import merge_local_to_remote, merge_remote_to_local, get_sync_differences
 from offline_api import import_json_dict_to_local, export_local_all
-from contact import Contact, create_contact_object
+from contact import Contact
 from collections import defaultdict
-from tag import add_tag, remove_tag, update_tag
-from utils import is_email, ContactAttr
+import phonenumbers
+from email_validator import validate_email, EmailNotValidError
 from datetime import datetime
 
 
@@ -139,14 +136,24 @@ def handle_update_phones_emails(id: str, phones_emails: str):
     phones_list = []
     emails_list = []
     for item in phones_emails_list:
-        if is_email(item) == ContactAttr.EMAIL:
+        item = item.strip()
+        try:
+            # Validate email
+            validate_email(item)
             emails_list.append(item)
-        elif is_email(item) == ContactAttr.PHONE:
-            phones_list.append(item)
+        except EmailNotValidError:
+            pass
+        try:
+            # Validate phone number
+            phone_number = phonenumbers.parse(item, None)
+            if phonenumbers.is_valid_number(phone_number):
+                phones_list.append(item)
+        except phonenumbers.NumberParseException:
+            pass
     if len(phones_list) == 0:
-        phones_list = None
+        phones_list = []
     if len(emails_list) == 0:
-        emails_list = None
+        emails_list = []
     return update_local(id, phone_numbers=phones_list, emails=emails_list)
 
 # Handle Syncing

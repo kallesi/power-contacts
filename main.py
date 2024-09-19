@@ -200,6 +200,7 @@ if __name__ == "__main__":
             resizable=True
         )
         webview.settings['ALLOW_DOWNLOADS'] = True
+
         webview.start()
         stop_event.set()  # Set stop_event after launching the window in production mode
     else:
