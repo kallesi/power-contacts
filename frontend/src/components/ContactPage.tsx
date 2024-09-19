@@ -149,12 +149,7 @@ function ContactPage({ contact, onClose }: Props) {
 
   const handleAddTag = () => {
     if (tagText === '' || tagText.startsWith(' ')) return;
-    let matched = false;
-    contact.tags.forEach((tag) => {
-      if (tag === tagText) {
-        matched = true;
-      }
-    });
+    const matched = contactState.tags.includes(tagText);
     if (!matched) {
       const req = {
         method: 'POST',

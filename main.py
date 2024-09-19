@@ -177,9 +177,7 @@ async def download_contacts():
     file_path = handle_export()
     return FileResponse(file_path, media_type='application/json', filename='contacts.json')
 
-
 stop_event = Event()
-
 
 def run_fastapi_server():
     while not stop_event.is_set():
