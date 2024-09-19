@@ -41,3 +41,32 @@ Power Contacts is an intuitive contact management tool designed to enhance how y
    - A `token.json` will be generated for future access.
 
 Power Contacts offers a robust and efficient solution for managing your connections. Start organizing your contacts today!
+
+# Build instructions
+
+To build from source, make sure you have Python 3.12 and node 20 installed.
+
+- Clone the repository `git clone https://github.com/kallesi/power-contacts .`
+- Create a python virtual environment
+  - `cd /path/to/project/`
+  - `python -m venv venv`
+- Install all requirements 
+  - `pip install -r requirements.txt`
+- Go to the frontend folder and install npm dependencies
+  - `cd frontend`
+  - `npm i`
+- You have the project set up. Start a development server by
+  - Frontend: 
+    - `cd frontend`
+    - `npm run dev`
+  - Backend
+    - Go to `main.py` and at the very bottom and make sure `mode = RunMode.DEV`
+- Once you are ready to build, go to the frontend folder. Run
+  - `npm run build` - This will turn the React code into static files.
+  - Go back to `main.py` and make sure `mode = RunMode.PROD`
+  - Run the file, the app should work as expected
+- Building the executable:
+  - The `setup.py` script contains the build instructions
+  - Run `python setup.py bdist-msi` to get a windows installer
+  - Run `python setup.py build` to get a regular folder with an `.exe` along with libraries/header files
+
