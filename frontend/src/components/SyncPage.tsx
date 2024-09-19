@@ -45,6 +45,11 @@ function SyncPage({ onClose }: SyncPageProps) {
     };
   }, [onClose]);
 
+  useEffect(() => {
+    handleCheckSyncDifference();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const handleCheckSyncDifference = () => {
     const req = {
       method: 'GET',
