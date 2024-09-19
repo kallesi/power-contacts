@@ -22,7 +22,7 @@ class Contact:
         self.tags, self.events, self.notes = self._process_plain_text(text_attributes)
 
     def __lt__(self, other):
-        return self.name < other.name
+        return self.name.lower() < other.name.lower()
 
     def __eq__(self, other):
         if not isinstance(other, Contact):
