@@ -40,9 +40,9 @@ class Contact:
         events = []
         notes = []
         for attribute in text_attributes:
-            if attribute[:1] == '#' and len(attribute) > 1:
+            if attribute[:1] == '#' and len(attribute) > 1 and not attribute[1:].startswith(' '):
                 tags.append(attribute[1:])
-            elif attribute[:1] == ':' and len(attribute) > 4:
+            elif attribute[:1] == ':' and len(attribute) > 4 and not attribute[1:].startswith(' '):
                 text_after_colon = attribute[1:]
                 position_of_space_char = text_after_colon.find(' ')
                 event_date = text_after_colon[:position_of_space_char]
