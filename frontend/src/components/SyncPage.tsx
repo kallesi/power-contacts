@@ -138,7 +138,7 @@ function SyncPage({ onClose }: SyncPageProps) {
       onClick={onClose}
     >
       <div
-        className='mt-8 p-5 card bg-base-100 shadow-md z-50 w-3/5 h-5/6 overflow-scroll shadow-slate-950'
+        className='mt-8 p-5 card bg-base-100 shadow-md z-50 w-3/5 h-5/6 overflow-y-scroll shadow-slate-950'
         onClick={(e) => e.stopPropagation()}
       >
         <div className='grid grid-rows-1 grid-cols-1'>

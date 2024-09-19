@@ -60,6 +60,10 @@ function NavBar({ searchText, setSearchText, showSearch = true }: NavBarProps) {
             event.preventDefault();
             navigateOrRefresh('/app/events/');
             break;
+          case 's':
+            event.preventDefault();
+            handleOpenSyncPage();
+            break;
           case 'a':
             event.preventDefault();
             handleAddContact();
@@ -83,7 +87,11 @@ function NavBar({ searchText, setSearchText, showSearch = true }: NavBarProps) {
 
   const handleCloseSyncPage = () => {
     setSyncIsOpen(false);
-    window.location.reload();
+    const originalPath = location.pathname;
+    navigate('/');
+    setTimeout(() => {
+      navigate(originalPath);
+    }, 1);
   }
 
   const handleAddContact = () => {
@@ -133,19 +141,19 @@ function NavBar({ searchText, setSearchText, showSearch = true }: NavBarProps) {
         </button>
         <button
           onClick={() => navigateOrRefresh('/app/tags/')}
-          className='btn btn-ghost text-lg font-normal text-white'
+          className={`btn text-lg font-normal text-white ${(location.pathname == '/app/tags/' && !syncIsOpen) ? 'btn-neutral' : 'btn-ghost'}`}
         >
           <LiaTagSolid size={30} />
         </button>
         <button
           onClick={() => navigateOrRefresh('/app/events/')}
-          className='btn btn-ghost text-lg font-normal text-white'
+          className={`btn text-lg font-normal text-white ${(location.pathname == '/app/events/' && !syncIsOpen) ? 'btn-neutral' : 'btn-ghost'}`}
         >
           <MdEventAvailable size={26} />
         </button>
         <button
           onClick={handleOpenSyncPage}
-          className='btn btn-ghost text-lg font-normal text-white'
+          className={`btn text-lg font-normal text-white ${syncIsOpen ? 'btn-neutral' : 'btn-ghost'}`}
         >
           <IoSyncSharp size={25} />
         </button>
