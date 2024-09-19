@@ -372,7 +372,7 @@ function ContactPageFull() {
           </div>
         </div>
         {contactState && contactState.events.length > 0 && (
-          <div className='collapse overflow-visible collapse-arrow bg-base-200 w-full my-3'>
+          <div className='collapse collapse-open overflow-visible bg-base-200 w-full my-3'>
             <input type='checkbox' />
             <div className='collapse-title text-xl font-medium'>
               Events ({contactState.events.length})
@@ -383,7 +383,7 @@ function ContactPageFull() {
                   <tr className='text-base'>
                     <th>Date</th>
                     <th>Event</th>
-                    <th>Delete</th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody>

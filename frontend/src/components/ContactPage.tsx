@@ -307,7 +307,7 @@ function ContactPage({ contact, onClose }: Props) {
                   <tr className='text-base'>
                     <th>Date</th>
                     <th>Event</th>
-                    <th>Delete</th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody>
