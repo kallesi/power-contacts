@@ -71,8 +71,9 @@ def handle_get_contact(id: str):
 
 def handle_add_tag(id: str, tag: str):
     contact: Contact = get_local(id)
-    tags = contact.tags
-    tags.append(tag)
+    tags: list = contact.tags
+    if not tag in tags:
+        tags.append(tag)
     new_contact = update_local(id, tags=tags)
     return new_contact
 

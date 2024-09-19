@@ -148,7 +148,7 @@ function ContactPage({ contact, onClose }: Props) {
   };
 
   const handleAddTag = () => {
-    if (tagText === '') return;
+    if (tagText === '' || tagText.startsWith(' ')) return;
     let matched = false;
     contact.tags.forEach((tag) => {
       if (tag === tagText) {

@@ -119,7 +119,7 @@ function ContactPageFull() {
   };
 
   const handleAddTag = () => {
-    if (tagText === '') return;
+    if (tagText === '' || tagText.startsWith(' ')) return;
     if (!contactState) return;
     const matched = contactState.tags.includes(tagText);
     if (!matched) {
