@@ -5,19 +5,11 @@ import { FiUpload, FiDownload } from 'react-icons/fi';
 import { IoSyncSharp } from 'react-icons/io5';
 import { BACKEND_URL } from '../constants';
 import { ExportButton, ImportButton } from './ImportExport';
+import { Contact } from '../commonTypes';
+import { useNavigate } from 'react-router-dom';
 
 type SyncPageProps = {
-  onClose: () => void;
-};
-
-type Contact = {
-  id: string;
-  name: string;
-  phoneNumbers: string[];
-  emails: string[];
-  tags: string[];
-  notes: string[];
-  events: Event[];
+  onClose: (returnToOriginalPath: boolean) => void;
 };
 
 type SyncResults = {
@@ -27,6 +19,7 @@ type SyncResults = {
 };
 
 function SyncPage({ onClose }: SyncPageProps) {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [showToast, setShowToast] = useState(false);
@@ -35,7 +28,7 @@ function SyncPage({ onClose }: SyncPageProps) {
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        onClose();
+        onClose(true);
       }
     };
 
@@ -122,6 +115,12 @@ function SyncPage({ onClose }: SyncPageProps) {
       });
   };
 
+  const handleRedirect = (contact: Contact) => {
+    navigate(`/app/contact/${contact.id}`);
+    onClose(false);
+
+  };
+
   const handleShowToastMessage = (message: string) => {
     setToastMessage(message);
     setShowToast(true);
@@ -133,11 +132,11 @@ function SyncPage({ onClose }: SyncPageProps) {
 
   return (
     <div
-      className='fixed inset-0 h-svh bg-black bg-opacity-50 flex justify-center items-center z-20'
-      onClick={onClose}
+      className='fixed inset-0 h-svh bg-black bg-opacity-50 flex justify-center items-center z-10'
+      onClick={() => { onClose(true) }}
     >
       <div
-        className='mt-8 p-5 card bg-base-100 shadow-md z-50 w-3/5 h-5/6 flex flex-col'
+        className='mt-8 p-5 card bg-base-100 shadow-md z-20 w-3/5 h-5/6 flex flex-col'
         onClick={(e) => e.stopPropagation()}
       >
         <div className='flex-none'>
@@ -183,7 +182,9 @@ function SyncPage({ onClose }: SyncPageProps) {
                   <ContactCardSimple
                     key={contact.id}
                     name={contact.name}
-                    onClick={() => { }}
+                    onClick={() => {
+                      handleRedirect(contact);
+                    }}
                   />
                 ))}
               </div>
@@ -201,7 +202,9 @@ function SyncPage({ onClose }: SyncPageProps) {
                   <ContactCardSimple
                     key={contact.id}
                     name={contact.name}
-                    onClick={() => { }}
+                    onClick={() => {
+                      handleRedirect(contact);
+                    }}
                   />
                 ))}
               </div>
@@ -219,7 +222,9 @@ function SyncPage({ onClose }: SyncPageProps) {
                   <ContactCardSimple
                     key={contact.id}
                     name={contact.name}
-                    onClick={() => { }}
+                    onClick={() => {
+                      handleRedirect(contact);
+                    }}
                   />
                 ))}
               </div>
@@ -239,6 +244,7 @@ function SyncPage({ onClose }: SyncPageProps) {
               Export
             </ExportButton>
           </div>
+
         </div>
 
         {showToast && (
@@ -249,6 +255,7 @@ function SyncPage({ onClose }: SyncPageProps) {
           </div>
         )}
       </div>
+
     </div>
   );
 }

@@ -14,15 +14,17 @@ type DatepickerType = 'date' | 'month';
 
 interface PickerProps {
   onDateChange: (date: Date) => void;
+  selectedDate: Date;
+  setSelectedDate: (date: Date) => void;
 }
 
-export default function Picker({ onDateChange }: PickerProps) {
+export default function Picker({ onDateChange, selectedDate, setSelectedDate }: PickerProps) {
   const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const [dayCount, setDayCount] = useState<Array<number>>([]);
   const [blankDays, setBlankDays] = useState<Array<number>>([]);
   const [showDatepicker, setShowDatepicker] = useState(false);
   const [datepickerHeaderDate, setDatepickerHeaderDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState(new Date());
+
   const [type, setType] = useState<DatepickerType>('date');
 
   const decrement = () => {

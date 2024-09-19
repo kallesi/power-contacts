@@ -1,11 +1,8 @@
-type Person = {
-  id: string;
-  name: string;
-};
+import { TagContact } from '../commonTypes'
 
 type TagCardProps = {
   tag: string;
-  people: Person[];
+  people: TagContact[];
   onClick: () => void;
 };
 

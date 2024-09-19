@@ -4,21 +4,18 @@ import useFetch from '../hooks/useFetch';
 import NavBar from '../components/NavBar';
 import TagPage from '../components/TagPage';
 import TagCard from '../components/TagCard';
+import { TagContact } from '../commonTypes';
 
-type Contact = {
-  id: string;
-  name: string;
-};
 
 type Tags = {
-  [tag: string]: Contact[];
+  [tag: string]: TagContact[];
 };
 
 function Tags() {
   const { data: tags } = useFetch<Tags>(`${BACKEND_URL}/tags`, 'GET');
   const [localTags, setLocalTags] = useState<Tags>({});
   const [searchText, setSearchText] = useState('');
-  const [selectedTag, setSelectedTag] = useState<{ tag: string; contacts: Contact[] } | null>(null);
+  const [selectedTag, setSelectedTag] = useState<{ tag: string; contacts: TagContact[] } | null>(null);
 
   useEffect(() => {
     setLocalTags(tags || {});
@@ -37,7 +34,7 @@ function Tags() {
         return acc;
       }, {} as Tags);
 
-      const filteredContacts: Contact[] = [];
+      const filteredContacts: TagContact[] = [];
       const uniqueContacts = new Set<string>();
 
       Object.entries(filteredTags).forEach(([, contacts]) => {
@@ -68,7 +65,7 @@ function Tags() {
     }
   }, [searchText, tags]);
 
-  const handleTagClick = (tag: string, contacts: Contact[]) => {
+  const handleTagClick = (tag: string, contacts: TagContact[]) => {
     setSelectedTag({ tag, contacts });
   };
 

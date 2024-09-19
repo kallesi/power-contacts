@@ -90,13 +90,15 @@ function NavBar({ searchText, setSearchText, showSearch = true }: NavBarProps) {
     setSyncIsOpen(true);
   };
 
-  const handleCloseSyncPage = () => {
+  const handleCloseSyncPage = (returnToOriginalPath: boolean = true) => {
     setSyncIsOpen(false);
-    const originalPath = location.pathname;
-    navigate('/');
-    setTimeout(() => {
-      navigate(originalPath);
-    }, 1);
+    if (returnToOriginalPath) {
+      const originalPath = location.pathname;
+      navigate('/');
+      setTimeout(() => {
+        navigate(originalPath);
+      }, 1);
+    }
   };
 
   const handleAddContact = () => {

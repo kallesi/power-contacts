@@ -7,6 +7,8 @@ import { Link } from 'react-router-dom';
 import Toast from './Toast';
 import { IoAddOutline } from 'react-icons/io5';
 import { MdUpdate } from 'react-icons/md';
+import ContactEventsTable from './ContactEventsTable';
+import { ContactEvent } from '../commonTypes';
 
 type Event = {
   date: string;
@@ -101,6 +103,11 @@ function ContactPage({ contact, onClose }: Props) {
       .catch((error) => {
         console.error('Error:', error);
       });
+  };
+
+  const autofillEventDetails = (event: ContactEvent) => {
+    setEventText(event.description);
+    setSelectedDate(new Date(event.date));
   };
 
   const handleSubmitEvent = () => {
@@ -299,55 +306,26 @@ function ContactPage({ contact, onClose }: Props) {
         </div>
         <div className='divider'></div>
         {contactState && contactState.events.length > 0 && (
-
-          <div className='collapse overflow-visible collapse-arrow bg-base-200 w-full my-3'>
-            <input type='checkbox' />
-            <div className='collapse-title text-xl font-medium'>
-              Events ({contactState.events.length})
-            </div>
-            <div className='collapse-content'>
-              <table className='table table-md'>
-                <thead>
-                  <tr className='text-base'>
-                    <th>Date</th>
-                    <th>Event</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {contactState.events
-                    .sort((a, b) => {
-                      const dateA = new Date(a.date).getTime();
-                      const dateB = new Date(b.date).getTime();
-                      return dateA - dateB;
-                    })
-                    .map((event, index) => (
-                      <tr key={index}>
-                        <th>{event.date}</th>
-                        <td>{event.description}</td>
-                        <td>
-                          <button
-                            className='btn btn-outline btn-sm btn-error'
-                            onClick={() => handleDeleteEvent(event)}
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <ContactEventsTable
+            contact={contactState}
+            handleDeleteEvent={handleDeleteEvent}
+            autofillEventDetails={autofillEventDetails}
+          />
         )}
         <div className='h-full relative'>
-          <div className='grid grid-cols-2 gap-3'>{/* Main 4 elem grid */}
-            <div className='grid grid-rows-2 grid-cols-3 gap-4 m-2 items-center justify-between'>  {/*Events*/}
+          <div className='grid grid-cols-2 gap-3'>
+            {/* Main 4 elem grid */}
+            <div className='grid grid-rows-2 grid-cols-3 gap-4 m-2 items-center justify-between'>
+              {' '}
+              {/*Events*/}
               <h1 className='flex flex-row font-bold items-center'>
                 Add Event
               </h1>
-              <Picker onDateChange={handleDateChange} />
-
+              <Picker
+                selectedDate={selectedDate}
+                setSelectedDate={setSelectedDate}
+                onDateChange={handleDateChange}
+              />
               <button
                 className='btn btn-xs btn-primary btn-outline sm:btn-sm md:btn-md lg:btn-md'
                 onClick={handleSubmitEvent}
@@ -362,11 +340,12 @@ function ContactPage({ contact, onClose }: Props) {
                 onChange={(e) => setEventText(e.target.value)}
               />
             </div>
-            <div className='grid grid-rows-2 grid-cols-3 gap-4 m-2 items-center justify-between'> {/*Tags*/}
+            <div className='grid grid-rows-2 grid-cols-3 gap-4 m-2 items-center justify-between'>
+              {' '}
+              {/*Tags*/}
               <h1 className='flex flex-row font-bold items-center col-span-2'>
                 Add Tag
               </h1>
-
               <button
                 className='btn btn-xs btn-primary btn-outline sm:btn-sm md:btn-md lg:btn-md'
                 onClick={handleAddTag}
@@ -382,7 +361,9 @@ function ContactPage({ contact, onClose }: Props) {
               />
             </div>
             <div className='divider col-span-2'></div>
-            <div className='grid grid-rows-5 grid-cols-3 gap-4 m-2 items-center justify-between'> {/*Phones*/}
+            <div className='grid grid-rows-5 grid-cols-3 gap-4 m-2 items-center justify-between'>
+              {' '}
+              {/*Phones*/}
               <h1 className='font-bold col-span-2'>Numbers/Emails</h1>
               <button
                 className='btn btn-xs btn-primary btn-outline sm:btn-sm md:btn-md lg:btn-md'
@@ -390,7 +371,6 @@ function ContactPage({ contact, onClose }: Props) {
               >
                 <MdUpdate size={20} />
               </button>
-
               <textarea
                 placeholder='Emails & Numbers'
                 className='textarea textarea-bordered sm:h-30 lg:h-60 textarea-lg w-full col-span-3 row-span-4'
@@ -400,7 +380,9 @@ function ContactPage({ contact, onClose }: Props) {
                 }}
               ></textarea>
             </div>
-            <div className='grid grid-rows-5 grid-cols-3 gap-4 m-2 items-center justify-between'> {/*Notes*/}
+            <div className='grid grid-rows-5 grid-cols-3 gap-4 m-2 items-center justify-between'>
+              {' '}
+              {/*Notes*/}
               <h1 className='font-bold col-span-2'>Notes</h1>
               <button
                 className='btn btn-primary btn-outline btn-xs sm:btn-sm md:btn-md lg:btn-md'
@@ -415,7 +397,6 @@ function ContactPage({ contact, onClose }: Props) {
                 onChange={(e) => setNotesText(e.target.value)}
               ></textarea>
             </div>
-
           </div>
           {showToast && (
             <div className='fixed top-0 left-0 w-full flex items-center justify-center'>

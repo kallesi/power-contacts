@@ -9,21 +9,9 @@ import { MdDelete, MdDriveFileRenameOutline } from 'react-icons/md';
 import { IoAddOutline } from 'react-icons/io5';
 import { MdUpdate } from 'react-icons/md';
 import Toast from '../components/Toast';
+import { Contact, ContactEvent } from '../commonTypes';
+import ContactEventsTable from '../components/ContactEventsTable';
 
-type Event = {
-  date: string;
-  description: string;
-};
-
-type Contact = {
-  id: string;
-  name: string;
-  phoneNumbers: string[];
-  emails: string[];
-  tags: string[];
-  notes: string[];
-  events: Event[];
-};
 
 function ContactPageFull() {
   const { id } = useParams();
@@ -66,7 +54,7 @@ function ContactPageFull() {
     setSelectedDate(date);
   };
 
-  const handleDeleteEvent = (eventToDelete: Event) => {
+  const handleDeleteEvent = (eventToDelete: ContactEvent) => {
     if (!contactState) return;
     const req = {
       method: 'DELETE',
@@ -90,6 +78,11 @@ function ContactPageFull() {
         console.error('Error:', error);
       });
   };
+
+  const autofillEventDetails = (event: ContactEvent) => {
+    setEventText(event.description);
+    setSelectedDate(new Date(event.date));
+  }
 
   const handleSubmitEvent = () => {
     if (eventText === '') return;
@@ -374,45 +367,11 @@ function ContactPageFull() {
           </div>
         </div>
         {contactState && contactState.events.length > 0 && (
-          <div className='collapse collapse-open overflow-visible bg-base-200 w-full my-3'>
-            <input type='checkbox' />
-            <div className='collapse-title text-xl font-medium'>
-              Events ({contactState.events.length})
-            </div>
-            <div className='collapse-content'>
-              <table className='table table-md'>
-                <thead>
-                  <tr className='text-base'>
-                    <th>Date</th>
-                    <th>Event</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {contactState.events
-                    .sort((a, b) => {
-                      const dateA = new Date(a.date).getTime();
-                      const dateB = new Date(b.date).getTime();
-                      return dateA - dateB;
-                    })
-                    .map((event, index) => (
-                      <tr key={index}>
-                        <th>{event.date}</th>
-                        <td>{event.description}</td>
-                        <td>
-                          <button
-                            className='btn btn-outline btn-sm btn-error'
-                            onClick={() => handleDeleteEvent(event)}
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <ContactEventsTable
+            contact={contactState}
+            handleDeleteEvent={handleDeleteEvent}
+            autofillEventDetails={autofillEventDetails}
+          />
         )}
         <div className="divider"></div>
         <div className='overflow-x-auto h-full relative'>
@@ -421,7 +380,7 @@ function ContactPageFull() {
               <h1 className='flex flex-row font-bold items-center'>
                 Add Event
               </h1>
-              <Picker onDateChange={handleDateChange} />
+              <Picker onDateChange={handleDateChange} selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
 
               <button
                 className='btn btn-xs btn-primary btn-outline sm:btn-sm md:btn-md lg:btn-md'
