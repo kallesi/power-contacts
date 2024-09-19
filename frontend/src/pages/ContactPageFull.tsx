@@ -371,6 +371,7 @@ function ContactPageFull() {
             contact={contactState}
             handleDeleteEvent={handleDeleteEvent}
             autofillEventDetails={autofillEventDetails}
+            open={true}
           />
         )}
         <div className="divider"></div>
