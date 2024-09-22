@@ -1,7 +1,8 @@
 from threading import Thread, Event
 from enum import Enum
+from utils import get_error_dict
 import json
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
@@ -13,7 +14,7 @@ from handle_requests import handle_update_tag, handle_update_event, handle_updat
 from handle_requests import handle_remove_tag, handle_remove_event
 from handle_requests import handle_delete_contact, handle_create_contact, handle_rename_contact
 from handle_requests import handle_update_phones_emails
-from handle_requests import handle_get_sync_differences, handle_merge_to_local, handle_merge_to_remote
+from handle_requests import handle_get_sync_differences, handle_merge_to_local, handle_merge_to_remote, handle_delete_token
 from handle_requests import handle_import, handle_export
 
 
@@ -47,21 +48,30 @@ def get_contacts():
     """
     Returns all contacts
     """
-    return handle_get_contacts()
+    try:
+        return handle_get_contacts()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=get_error_dict(e))
 
 @app.post("/contact/create")
 def create_contact(name: str):
     """
     Creates a new contact
     """
-    return handle_create_contact(name)
+    try:
+        return handle_create_contact(name)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=get_error_dict(e))
 
 @app.get("/contact/{id}")
 def get_contact(id: str):
     """
     Returns full details of matched contact
     """
-    return handle_get_contact(id)
+    try:
+        return handle_get_contact(id)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=get_error_dict(e))
 @app.post("/contact/{id}")
 def post_contact_details(id: str,
                          tag: str = None,
@@ -71,12 +81,15 @@ def post_contact_details(id: str,
     """
     Returns full details of updated contact
     """
-    if tag:
-        return handle_add_tag(id, tag)
-    elif date and description:
-        return handle_add_event(id, date, description)
-    else:
-        return {'Error': 'Please provide tag or event to add'}
+    try:
+        if tag:
+            return handle_add_tag(id, tag)
+        elif date and description:
+            return handle_add_event(id, date, description)
+        else:
+            return {'Error': 'Please provide tag or event to add'}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=get_error_dict(e))
 
 @app.put("/contact/{id}")
 def put_contact_details(id: str,
@@ -91,18 +104,21 @@ def put_contact_details(id: str,
     """
     Returns full details of updated contact
     """
-    if old_tag and new_tag:
-        return handle_update_tag(id, old_tag, new_tag)
-    elif date and description:
-        return handle_update_event(id, date, description)
-    elif rename_new_name:
-        return handle_rename_contact(id, rename_new_name)
-    elif notes != None:
-        return handle_update_notes(id, notes)
-    elif phone_email_multiline != None:
-        return handle_update_phones_emails(id, phone_email_multiline)
-    else:
-        return {'Error': 'Please provide tag or event to update'}
+    try:
+        if old_tag and new_tag:
+            return handle_update_tag(id, old_tag, new_tag)
+        elif date and description:
+            return handle_update_event(id, date, description)
+        elif rename_new_name:
+            return handle_rename_contact(id, rename_new_name)
+        elif notes != None:
+            return handle_update_notes(id, notes)
+        elif phone_email_multiline != None:
+            return handle_update_phones_emails(id, phone_email_multiline)
+        else:
+            return {'Error': 'Please provide tag or event to update'}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=get_error_dict(e))
 
 @app.delete("/contact/{id}")
 def delete_contact_details(id: str,
@@ -115,67 +131,104 @@ def delete_contact_details(id: str,
     For date, note that it will delete any events associated with this date prefix.
     If you provide "2024-01" it will delete any events in 2024 January, etc.
     """
-    if tag:
-        return handle_remove_tag(id, tag)
-    elif date:
-        return handle_remove_event(id, date)
-    elif delete_contact:
-        return handle_delete_contact(id)
-    else:
-        return {'Error': 'Please provide tag or event to delete'}
-
+    try:
+        if tag:
+            return handle_remove_tag(id, tag)
+        elif date:
+            return handle_remove_event(id, date)
+        elif delete_contact:
+            return handle_delete_contact(id)
+        else:
+            return {'Error': 'Please provide tag or event to delete'}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=get_error_dict(e))
 @app.get("/events")
 def get_events():
     """
     Returns all events, grouped by date
     """
-    return handle_get_events()
+    try:
+        return handle_get_events()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=get_error_dict(e))
+
 @app.get("/event/{date}")
 def get_event(date: str):
     """
     Returns all events matching the date query
     """
-    return handle_get_event(date)
+    try:
+        return handle_get_event(date)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=get_error_dict(e))
 @app.get("/tags")
 def get_tags():
     """
     Returns all tags and contacts tagged with each event
     """
-    return handle_get_tags()
+    try:
+        return handle_get_tags()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=get_error_dict(e))
 @app.get("/tag/{tag}")
 def get_tag(tag: str):
     """
     Returns all tags starting with the phrase
     """
-    return handle_get_tag(tag)
+    try:
+        return handle_get_tag(tag)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=get_error_dict(e))
 
 # Handle Synchronisation
 
 @app.get("/sync")
 def get_sync_differences():
-    return handle_get_sync_differences()
+    try:
+        return handle_get_sync_differences()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=get_error_dict(e))
 
 @app.put("/sync/pull")
 def sync_pull():
-    return handle_merge_to_local()
+    try:
+        return handle_merge_to_local()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=get_error_dict(e))
 
 @app.put("/sync/push")
 def sync_push():
-    changes = handle_merge_to_remote()
-    handle_merge_to_local()
-    return changes
+    try:
+        changes = handle_merge_to_remote()
+        handle_merge_to_local()
+        return changes
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=get_error_dict(e))
+
+@app.put("/sync/reset")
+def reset_credentials():
+    try:
+        return handle_delete_token()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=get_error_dict(e))
 
 # Import export
 @app.post("/upload")
 async def upload_contacts(file: UploadFile = File(...)):
-    contents = await file.read()
-    data = json.loads(contents)
-    contacts = handle_import(data)
-    return contacts
+    try:
+        contents = await file.read()
+        data = json.loads(contents)
+        contacts = handle_import(data)
+        return contacts
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=get_error_dict(e))
 @app.get("/download")
 async def download_contacts():
-    file_path = handle_export()
-    return FileResponse(file_path, media_type='application/json', filename='contacts.json')
+    try:
+        file_path = handle_export()
+        return FileResponse(file_path, media_type='application/json', filename='contacts.json')
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=get_error_dict(e))
 
 stop_event = Event()
 

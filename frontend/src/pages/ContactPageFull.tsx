@@ -37,10 +37,9 @@ function ContactPageFull() {
       const allNotes = contact.notes.join('\n');
       setNotesText(allNotes);
 
-      const phoneNumbers = contact.phoneNumbers.join('\n');
-      const emails = contact.emails.join('\n');
-      const combinedPhoneEmails = `${phoneNumbers}\n${emails}`;
-      setPhonesEmailsText(combinedPhoneEmails);
+      const phonesEmailsList = [...contact.phoneNumbers, ...contact.emails];
+      const phonesEmailsString = phonesEmailsList.join('\n')
+      setPhonesEmailsText(phonesEmailsString);
 
       setRenamedContactName(contact.name);
     }

@@ -46,10 +46,9 @@ function ContactPage({ contact, onClose }: Props) {
       const allNotes = contact.notes.join('\n');
       setNotesText(allNotes);
 
-      const phoneNumbers = contact.phoneNumbers.join('\n');
-      const emails = contact.emails.join('\n');
-      const combinedPhoneEmails = `${phoneNumbers}\n${emails}`;
-      setPhonesEmailsText(combinedPhoneEmails);
+      const phonesEmailsList = [...contact.phoneNumbers, ...contact.emails];
+      const phonesEmailsString = phonesEmailsList.join('\n')
+      setPhonesEmailsText(phonesEmailsString);
     }
   }, [contact]);
 
@@ -358,7 +357,7 @@ function ContactPage({ contact, onClose }: Props) {
             <div className='divider col-span-2'></div>
             <div className='grid grid-rows-5 grid-cols-3 gap-4 m-2 items-center justify-between'>
               {' '}
-              {/*Phones*/}
+              {/*Phones emails*/}
               <h1 className='font-bold col-span-2'>Numbers/Emails</h1>
               <button
                 className='btn btn-xs btn-primary btn-outline sm:btn-sm md:btn-md lg:btn-md'

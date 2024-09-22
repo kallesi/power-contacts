@@ -7,6 +7,7 @@ import { BACKEND_URL } from '../constants';
 import { ExportButton, ImportButton } from './ImportExport';
 import { Contact } from '../commonTypes';
 import { useNavigate } from 'react-router-dom';
+import { CiLock } from 'react-icons/ci';
 
 type SyncPageProps = {
   onClose: (returnToOriginalPath: boolean) => void;
@@ -41,6 +42,7 @@ function SyncPage({ onClose }: SyncPageProps) {
 
   useEffect(() => {
     handleCheckSyncDifference();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleCheckSyncDifference = () => {
@@ -51,8 +53,10 @@ function SyncPage({ onClose }: SyncPageProps) {
     fetch(`${BACKEND_URL}/sync`, req)
       .then((response) => {
         if (!response.ok) {
-          setIsLoading(false);
-          throw new Error('Network response was not ok');
+          return response.json().then((e) => {
+            setIsLoading(false);
+            handleShowToastMessage(`Error: ${e.detail.message || 'Unexpected'}`);
+          });
         }
         return response.json();
       })
@@ -75,8 +79,11 @@ function SyncPage({ onClose }: SyncPageProps) {
     fetch(`${BACKEND_URL}/sync/pull`, req)
       .then((response) => {
         if (!response.ok) {
-          setIsLoading(false);
-          throw new Error('Network response was not ok');
+          return response.json().then((e) => {
+            setIsLoading(false);
+            handleShowToastMessage(`Error: ${e.detail?.message || 'Unexpected'}`);
+            throw new Error('Error occurred');
+          });
         }
         return response.json();
       })
@@ -99,8 +106,11 @@ function SyncPage({ onClose }: SyncPageProps) {
     fetch(`${BACKEND_URL}/sync/push`, req)
       .then((response) => {
         if (!response.ok) {
-          setIsLoading(false);
-          throw new Error('Network response was not ok');
+          return response.json().then((e) => {
+            setIsLoading(false);
+            handleShowToastMessage(`Error: ${e.detail?.message || 'Unexpected'}`);
+            throw new Error('Error occurred');
+          });
         }
         return response.json();
       })
@@ -114,6 +124,33 @@ function SyncPage({ onClose }: SyncPageProps) {
         console.error('Error:', error);
       });
   };
+
+  const handleResetCredentials = () => {
+    const req = {
+      method: 'PUT',
+    };
+    setIsLoading(true);
+    fetch(`${BACKEND_URL}/sync/reset`, req)
+      .then((response) => {
+        if (!response.ok) {
+          return response.json().then((e) => {
+            setIsLoading(false);
+            handleShowToastMessage(`Error: ${e.detail?.message || 'Unexpected'}`);
+            throw new Error('Error occurred');
+          });
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log('Success:', data);
+        setIsLoading(false);
+        handleShowToastMessage('Success');
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  };
+
 
   const handleRedirect = (contact: Contact) => {
     navigate(`/app/contact/${contact.id}`);
@@ -148,7 +185,7 @@ function SyncPage({ onClose }: SyncPageProps) {
               <span className='loading loading-spinner loading-lg ml-4'></span>
             )}
           </div>
-          <div className='grid grid-cols-3 gap-5 mt-4'>
+          <div className='grid grid-cols-4 gap-5 mt-4'>
             <button
               onClick={handleCheckSyncDifference}
               className='btn btn-outline btn-primary text-lg font-normal text-white'
@@ -166,6 +203,12 @@ function SyncPage({ onClose }: SyncPageProps) {
               className='btn btn-outline btn-warning text-lg font-normal text-white'
             >
               <FiUpload />
+            </button>
+            <button
+              onClick={handleResetCredentials}
+              className='btn btn-outline btn-ghost text-lg font-normal text-white'
+            >
+              <CiLock size={22} /> Reset
             </button>
           </div>
         </div>

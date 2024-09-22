@@ -1,7 +1,18 @@
 import { useState, useEffect } from 'react';
 
-const Toast = ({ message }: { message: string }) => {
+type ToastProps = {
+  message: string
+}
+
+const Toast = ({ message }: ToastProps) => {
   const [showToast, setShowToast] = useState(true);
+
+  let error: boolean;
+  if (message.includes('Error')) {
+    error = true;
+  } else {
+    error = false;
+  }
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -16,7 +27,7 @@ const Toast = ({ message }: { message: string }) => {
   return (
     <div>
       {showToast && (
-        <div className='alert alert-success flex flex-row items-center shadow-black shadow-lg'>
+        <div className={`alert ${error ? 'alert-error' : 'alert-success'} flex flex-row items-center shadow-black shadow-lg`}>
           <span>{message}</span>
         </div>
       )}
