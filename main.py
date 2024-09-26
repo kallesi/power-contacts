@@ -200,7 +200,6 @@ def sync_pull():
 def sync_push():
     try:
         changes = handle_merge_to_remote()
-        handle_merge_to_local()
         return changes
     except Exception as e:
         raise HTTPException(status_code=500, detail=get_error_dict(e))
