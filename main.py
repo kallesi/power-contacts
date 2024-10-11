@@ -1,9 +1,10 @@
+import os
 from threading import Thread, Event
 from enum import Enum
 from utils import get_error_dict
 import json
 from fastapi import FastAPI, UploadFile, File, HTTPException
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
@@ -22,7 +23,26 @@ class RunMode(Enum):
     DEV = 0
     PROD = 1
 
+# Handle static files
 STATIC_DIR = "static"
+class SPAStaticFiles(StaticFiles):
+    """
+    Custom StaticFiles class to serve index.html for any unmatched routes.
+    This ensures that frontend routing is handled by React Router.
+    """
+    async def get_response(self, path: str, scope):
+        print('Get response is run')
+        # Attempt to get the static file response
+        try:
+            print('Trying what parent class does')
+            response = await super().get_response(path, scope)
+            return response
+        except:
+            print('Got 404, Triggered specific action')
+            # Serve the index.html file
+            index_file_path = os.path.join(self.directory, "index.html")
+            return FileResponse(index_file_path)
+
 FASTAPI_PORT = 3001
 app = FastAPI()
 origins = [
@@ -38,10 +58,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 @app.get("/")
 def read_root():
     return 'Server is online'
+
 
 @app.get("/contacts")
 def get_contacts():
@@ -229,35 +249,35 @@ async def download_contacts():
     except Exception as e:
         raise HTTPException(status_code=500, detail=get_error_dict(e))
 
-stop_event = Event()
 
-def run_fastapi_server():
-    while not stop_event.is_set():
-        uvicorn.run(app, host="127.0.0.1", port=FASTAPI_PORT)
+
 
 if __name__ == "__main__":
     mode = RunMode.PROD
-    if mode == RunMode.PROD:  # Mount the static files only in production mode
-        app.mount("/app", StaticFiles(directory=STATIC_DIR, html=True), name="app")
+    if mode == RunMode.PROD:
+        app.mount("/app", SPAStaticFiles(directory=STATIC_DIR, html=True), name="app")
+    stop_event = Event()
+    def run_fastapi_server():
+        while not stop_event.is_set():
+            uvicorn.run(app, host="127.0.0.1", port=FASTAPI_PORT)
     t = Thread(target=run_fastapi_server)
     t.daemon = True
     t.start()
-    if mode == RunMode.PROD:  # Launch the window only in production mode
+    if mode == RunMode.PROD:
         webview.create_window(
             title='Power Contacts',
             url=f'http://localhost:{FASTAPI_PORT}/app/',
             height=960,
             width=1280,
-            min_size=(1280, 960),  # Set the minimum size
+            min_size=(1280, 960),
             resizable=True
         )
         webview.settings['ALLOW_DOWNLOADS'] = True
-
         webview.start()
-        stop_event.set()  # Set stop_event after launching the window in production mode
+        stop_event.set()
     else:
         try:
             while True:
                 pass  # Keep the main thread running in development mode
         except KeyboardInterrupt:
-            stop_event.set()  # Set stop_event if KeyboardInterrupt occurs in development mode
+            stop_event.set()
