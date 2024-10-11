@@ -31,14 +31,11 @@ class SPAStaticFiles(StaticFiles):
     This ensures that frontend routing is handled by React Router.
     """
     async def get_response(self, path: str, scope):
-        print('Get response is run')
         # Attempt to get the static file response
         try:
-            print('Trying what parent class does')
             response = await super().get_response(path, scope)
             return response
         except:
-            print('Got 404, Triggered specific action')
             # Serve the index.html file
             index_file_path = os.path.join(self.directory, "index.html")
             return FileResponse(index_file_path)
