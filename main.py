@@ -1,6 +1,7 @@
 import os
 from threading import Thread, Event
 from enum import Enum
+import pyperclip
 from utils import get_error_dict
 import json
 from fastapi import FastAPI, UploadFile, File, HTTPException
@@ -55,10 +56,44 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+def copy_current_url():
+    active_window = webview.active_window()
+    if active_window:
+        # Correct JavaScript to get the current URL
+        url = active_window.evaluate_js('window.location.href')
+        if url:
+            pyperclip.copy(url)
+            print(f"Copied URL: {url}")
+        else:
+            print("Failed to retrieve URL.")
+
 @app.get("/")
 def read_root():
     return 'Server is online'
 
+@app.get("/redirect")
+def redirect(new_url: str):
+    """
+    Endpoint for controlling pywebview window.
+    Future functionality, not needed currently
+    """
+    try:
+        windows = []
+        for instance in webview.guilib.BrowserView.instances.values():
+            windows.append(instance.pywebview_window)
+        if not windows:
+            raise HTTPException(status_code=404, detail="No windows found")
+        active_window = windows[0]
+        if active_window:
+            # Navigate to the new URL
+            active_window.load_url(new_url)
+            # Verify the redirection
+            url = active_window.evaluate_js('window.location.href')
+            if url != new_url:
+                raise HTTPException(status_code=500, detail="Redirection failed")
+            return {"message": "Redirection successful", "current_url": url}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
 
 @app.get("/contacts")
 def get_contacts():
@@ -247,8 +282,6 @@ async def download_contacts():
         raise HTTPException(status_code=500, detail=get_error_dict(e))
 
 
-
-
 if __name__ == "__main__":
     mode = RunMode.PROD
     if mode == RunMode.PROD:
@@ -267,10 +300,16 @@ if __name__ == "__main__":
             height=960,
             width=1280,
             min_size=(1280, 960),
-            resizable=True
+            resizable=True,
+
         )
+        menu_items = [
+            webview.menu.Menu('URL', [
+                webview.menu.MenuAction('Copy', copy_current_url),
+            ])
+        ]
         webview.settings['ALLOW_DOWNLOADS'] = True
-        webview.start()
+        webview.start(menu=menu_items)
         stop_event.set()
     else:
         try:
