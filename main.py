@@ -41,11 +41,11 @@ class SPAStaticFiles(StaticFiles):
             index_file_path = os.path.join(self.directory, "index.html")
             return FileResponse(index_file_path)
 
-FASTAPI_PORT = 3001
+FASTAPI_PORT = 40108
 app = FastAPI()
 origins = [
-    'http://127.0.0.1:3001',
-    'http://localhost:3001',
+    'http://127.0.0.1:40108',
+    'http://localhost:40108',
     'http://localhost:5173',
 ]
 app.add_middleware(
